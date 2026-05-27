@@ -1,6 +1,6 @@
 # CodeCraft — Project Structure (Root)
 
-**Last Updated:** 2026-05-28 (after TASK-09 + TASK-10)
+**Last Updated:** 2026-05-28 (after TASK-14 + TASK-15)
 
 ---
 
@@ -25,7 +25,9 @@ codecraft/                                   # Project root
 │   │   ├── TASK-08/                         # ✅ File CRUD operations (useFileTree hook)
 │   │   ├── TASK-09/                         # ✅ Project list page + CRUD
 │   │   ├── TASK-10/                         # ✅ ZIP import/export (fflate)
-│   │   └── TASK-13/                         # ✅ Dark theme + CSS
+│   │   ├── TASK-13/                         # ✅ Dark theme + CSS
+│   │   ├── TASK-14/                         # ✅ Status bar component
+│   │   └── TASK-15/                         # ✅ Keyboard shortcuts
 │   └── Structure.md
 ├── src/                                     # Application source code
 │   ├── components/                          # ✅ React components
@@ -47,10 +49,13 @@ codecraft/                                   # Project root
 │   │   │   └── index.ts                     # Barrel exports
 │   │   ├── Layout/                          # (placeholder)
 │   │   ├── Modals/                          # (placeholder)
-│   │   ├── StatusBar/                       # (placeholder)
-│   │   └── Console/                         # (placeholder)
+│   │   ├── StatusBar/                       # ✅ Status bar (TASK-14)
+│   │   │   ├── StatusBar.tsx               # Dynamic status bar (cursor, language, save status, exec indicator)
+│   │   │   └── index.ts                     # Barrel exports
+│   │   └── Console/                         # ✅ Console output (TASK-12)
 │   ├── hooks/                               # ✅ Custom React hooks
 │   │   ├── useAutoSave.ts                   # Auto-save with 1s debounce → IndexedDB
+│   │   ├── useKeyboardShortcuts.ts          # Global IDE shortcuts (Ctrl+S/B/J/W/Enter, TASK-15)
 │   │   └── useProjects.ts                   # Reactive project list + CRUD + project switching
 │   ├── stores/                              # ✅ Zustand state stores
 │   │   ├── index.ts, projectStore.ts, editorStore.ts, uiStore.ts, consoleStore.ts
@@ -63,7 +68,7 @@ codecraft/                                   # Project root
 │   ├── types/                               # ✅ Shared TypeScript types
 │   │   └── index.ts
 │   ├── styles/                              # ✅ CSS styles (enhanced)
-│   │   ├── globals.css                      # Theme variables + global reset + tab bar + resize + status bar + file tree + context menu + project list + titlebar
+│   │   ├── globals.css                      # Theme variables + global reset + tab bar + resize + status bar + file tree + context menu + project list + titlebar + console
 │   │   └── editor.css                       # CodeMirror 6 overrides
 │   ├── App.tsx                              # ✅ Root component: ProjectList ↔ IDEWorkspace routing
 │   ├── main.tsx                             # ✅ React entry point
@@ -77,7 +82,7 @@ codecraft/                                   # Project root
 
 | Phase | Status | Key Deliverables |
 |-------|--------|-----------------|
-| **Phase 0** | 🟡 In Progress (M4 complete) | TASK-01 ✅, TASK-02 ✅, TASK-03 ✅, TASK-04 ✅, TASK-05 ✅, TASK-06 ✅, TASK-07 ✅, TASK-08 ✅, TASK-09 ✅, TASK-10 ✅, TASK-13 ✅ |
+| **Phase 0** | 🟡 In Progress (M5+M6 mostly complete) | TASK-01 ✅, TASK-02 ✅, TASK-03 ✅, TASK-04 ✅, TASK-05 ✅, TASK-06 ✅, TASK-07 ✅, TASK-08 ✅, TASK-09 ✅, TASK-10 ✅, TASK-11 ✅, TASK-12 ✅, TASK-13 ✅, TASK-14 ✅, TASK-15 ✅ |
 | **Phase 1** | ⚪ Not Started | Multi-language, nested folders, theme switcher |
 | **Phase 2** | ⚪ Not Started | Terminal, drag-and-drop, C/Lua/Ruby support |
 | **Phase 3** | ⚪ Not Started | C++/Java/PHP, HMR, collaboration |
@@ -96,11 +101,11 @@ codecraft/                                   # Project root
 | TASK-08 | ✅ Done | File CRUD operations (useFileTree hook) |
 | TASK-09 | ✅ Done | Project list page + CRUD |
 | TASK-10 | ✅ Done | ZIP import/export (fflate) |
-| TASK-11 | ⚪ Pending | JS code runner |
-| TASK-12 | ⚪ Pending | Console output panel |
+| TASK-11 | ✅ Done | JS code runner |
+| TASK-12 | ✅ Done | Console output panel |
 | TASK-13 | ✅ Done | Dark theme + CSS variables |
-| TASK-14 | ⚪ Pending | Status bar component |
-| TASK-15 | ⚪ Pending | Keyboard shortcuts |
+| TASK-14 | ✅ Done | Status bar component |
+| TASK-15 | ✅ Done | Keyboard shortcuts |
 | TASK-16 | ⚪ Pending | PWA setup |
 | TASK-17 | ⚪ Pending | Live preview |
 | TASK-18 | ⚪ Pending | Skeleton loading |

@@ -493,6 +493,33 @@ body {
   color: var(--text-secondary);
 }
 
+/* ─── TASK-14: Clickable status bar items (Phase 1 interactivity) ─── */
+.statusbar-clickable {
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  color: inherit;
+  outline: none;
+}
+
+.statusbar-clickable:focus-visible {
+  outline: 1px solid var(--accent-blue);
+  outline-offset: -1px;
+}
+
+.statusbar-clickable:hover {
+  background: var(--statusbar-item-hover);
+  color: var(--text-secondary);
+}
+
+/* Comma separator between Ln/Col */
+.statusbar-separator {
+  color: var(--text-muted);
+  margin: 0 1px;
+}
+
 /* ============================================================
    File Tree Sidebar Styles
    TASK-07: File tree sidebar component

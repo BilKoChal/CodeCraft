@@ -11,6 +11,8 @@
  * @see Project-Plan.md TASK-09 — Project list page + CRUD
  * @see Project-Plan.md TASK-11 — JS code runner (Web Worker)
  * @see Project-Plan.md TASK-12 — Console output panel
+ * @see Project-Plan.md TASK-14 — Status bar component
+ * @see Project-Plan.md TASK-15 — Keyboard shortcuts
  */
 
 import { useCallback } from 'react';
@@ -21,11 +23,13 @@ import { useEditorStore } from './stores/editorStore';
 import { useUIStore } from './stores/uiStore';
 import { useConsoleStore } from './stores/consoleStore';
 import { useAutoSave } from './hooks/useAutoSave';
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { CodeEditor } from './components/Editor';
 import { TabBar } from './components/Tabs';
 import { FileTree } from './components/Sidebar';
 import { ProjectList } from './components/ProjectList';
 import { ConsoleOutput } from './components/Console';
+import { StatusBar } from './components/StatusBar';
 import { jsRunner } from './runner/jsRunner';
 import { exportProjectToZip } from './utils/zipImport';
 import { getFile, getProject } from './db';
@@ -35,6 +39,7 @@ import { isExecutable } from './utils/languageDetection';
 
 function IDEWorkspace() {
   useAutoSave();
+  useKeyboardShortcuts(); // TASK-15: Global IDE shortcuts
 
   const sidebarOpen = useUIStore((s) => s.sidebarOpen);
   const bottomPanelOpen = useUIStore((s) => s.bottomPanelOpen);
@@ -206,17 +211,8 @@ function IDEWorkspace() {
         </Panel>
       </PanelGroup>
 
-      {/* Status Bar */}
-      <footer className="statusbar">
-        <div className="statusbar-left">
-          <span className="statusbar-item">Ln 1, Col 1</span>
-        </div>
-        <div className="statusbar-right">
-          <span className="statusbar-item">JavaScript</span>
-          <span className="statusbar-item">UTF-8</span>
-          <span className="statusbar-item">Spaces: 2</span>
-        </div>
-      </footer>
+      {/* Status Bar (TASK-14) */}
+      <StatusBar />
     </div>
   );
 }
