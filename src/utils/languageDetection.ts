@@ -1,54 +1,54 @@
 /**
  * CodeCraft — Language Detection Utility
  *
- * Maps file extensions to CodeMirror language modes.
- * To be fully implemented in PH1-03 with @codemirror/language-data.
+ * Maps file extensions to language identifiers for CodeMirror 6
+ * syntax highlighting and code execution routing.
  */
 
-/** Map of file extensions to language identifiers */
-const EXTENSION_TO_LANGUAGE: Record<string, string> = {
+import type { LanguageId } from '../types';
+
+/** Map of file extension (without dot) to language ID */
+const EXTENSION_MAP: Record<string, LanguageId> = {
   js: 'javascript',
   jsx: 'javascript',
+  mjs: 'javascript',
+  cjs: 'javascript',
   ts: 'typescript',
   tsx: 'typescript',
   html: 'html',
   htm: 'html',
   css: 'css',
-  scss: 'scss',
-  less: 'less',
   json: 'json',
   md: 'markdown',
-  py: 'python',
-  java: 'java',
-  c: 'cpp',
-  cpp: 'cpp',
-  h: 'cpp',
-  hpp: 'cpp',
-  go: 'go',
-  rs: 'rust',
-  sql: 'sql',
-  php: 'php',
-  xml: 'xml',
-  yaml: 'yaml',
-  yml: 'yaml',
-  rb: 'ruby',
-  swift: 'swift',
-  kt: 'kotlin',
-  sh: 'shell',
-  bash: 'shell',
-  lua: 'lua',
-  r: 'r',
-  dart: 'dart',
-  vue: 'vue',
+  markdown: 'markdown',
+  txt: 'plaintext',
 };
 
-/** Detect the language from a file extension */
-export function detectLanguage(fileName: string): string {
-  const ext = fileName.split('.').pop()?.toLowerCase() ?? '';
-  return EXTENSION_TO_LANGUAGE[ext] ?? 'plaintext';
+/**
+ * Detect the language of a file based on its extension.
+ * Falls back to 'plaintext' if the extension is unknown.
+ */
+export function detectLanguage(filename: string): LanguageId {
+  const dotIndex = filename.lastIndexOf('.');
+  if (dotIndex === -1) return 'plaintext';
+
+  const ext = filename.slice(dotIndex + 1).toLowerCase();
+  return EXTENSION_MAP[ext] ?? 'plaintext';
 }
 
-/** Get the file extension from a filename */
-export function getFileExtension(fileName: string): string {
-  return fileName.split('.').pop()?.toLowerCase() ?? '';
+/**
+ * Get the file extension (without dot) from a filename.
+ */
+export function getExtension(filename: string): string {
+  const dotIndex = filename.lastIndexOf('.');
+  if (dotIndex === -1) return '';
+  return filename.slice(dotIndex + 1).toLowerCase();
+}
+
+/**
+ * Check if a language is executable (has a code runner).
+ * In Phase 0, only JavaScript is executable.
+ */
+export function isExecutable(language: LanguageId): boolean {
+  return language === 'javascript';
 }

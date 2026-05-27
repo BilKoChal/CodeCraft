@@ -1,35 +1,45 @@
-# Project-Informations — Folder Structure
+# CodeCraft — Project Structure
 
-**Project:** CodeCraft  
-**Last Updated:** 2026-05-27  
+**Last Updated:** 2026-05-28 (after TASK-01 + TASK-02)
 
 ---
+
+## Project-Informations/ Directory
 
 ```
 Project-Informations/
 ├── planing/
-│   ├── Project-Plan.md                          # Master project plan with 6 phases + roadmap
+│   ├── Project-Plan.md                      # Master project plan (4 phases)
 │   ├── Original-Reports/
-│   │   ├── Generic-Research-1-OGF.md            # OGF: Architecture, GitHub Pages, performance
-│   │   ├── Editor-Research-2-OGF.md             # OGF: CM6 vs Monaco, languages, execution, Emmet
-│   │   └── UIUX-Research-3-OGF.md               # OGF: Design, themes, responsive, storage
+│   │   ├── Generic-Research-1-OGF.md        # Architecture, tech stack, persistence, deployment
+│   │   ├── UI-UX-Research-2-OGF.md          # UI/UX patterns, component architecture
+│   │   └── Code-Runner-Research-3-OGF.md    # Code execution, language support, live preview
 │   └── Final-Reports/
-│       ├── Generic-Research-1-FIN.md            # FIN: Enriched with plan task mappings
-│       ├── Editor-Research-2-FIN.md             # FIN: Enriched with plan task mappings
-│       └── UIUX-Research-3-FIN.md               # FIN: Enriched with plan task mappings
+│       ├── Generic-Research-1-FIN.md        # Enriched with plan cross-references
+│       ├── UI-UX-Research-2-FIN.md          # Enriched with plan cross-references
+│       └── Code-Runner-Research-3-FIN.md    # Enriched with plan cross-references
 ├── worklogs/
-│   └── 0-Worklog-20260527-163000.md             # Planning phase worklog
-├── analyses/                                     # Future analysis reports (empty)
-│   └── Placeholder.md
-├── development/                                  # Future development task reports (empty)
-│   └── Placeholder.md
-└── Structure.md                                  # This file
+│   ├── 0-Worklog-2026-05-28.md             # Initial planning worklog
+│   └── TASK-01-02-Worklog-Scaffold-Stores-2026-05-28.md  # TASK-01 + TASK-02 worklog
+├── analyses/
+│   └── Placeholder.md                       # Placeholder — delete when first analysis added
+├── development/
+│   ├── TASK-01/
+│   │   ├── Original-Reports/
+│   │   │   └── Scaffold-Implementation-1-OGF.md
+│   │   └── Final-Reports/
+│   │       └── Scaffold-Implementation-1-FIN.md
+│   └── TASK-02/
+│       ├── Original-Reports/
+│       │   └── Stores-Implementation-2-OGF.md
+│       └── Final-Reports/
+│           └── Stores-Implementation-2-FIN.md
+└── Structure.md                             # This file
 ```
 
-## Naming Conventions
+## Key File Types
 
-- **OGF** = Original, unmodified sub-agent reports (never alter these)
-- **FIN** = Finalized copies enriched with plan references and annotations
-- **Worklogs** = `{TaskId}-Worklog-{Description}-{Timestamp}.md`
-- **Analyses** = Subfolder per analysis task containing `Original-Reports/`, `Final-Reports/`, `Analysis-Summary.md`
-- **Development** = Subfolder per dev task containing `Original-Reports/`, `Final-Reports/`, `Implementation-Notes.md`
+| Suffix | Meaning |
+|--------|---------|
+| `-OGF.md` | Original report — **never modify** |
+| `-FIN.md` | Final/enhanced copy — enriched with plan references |

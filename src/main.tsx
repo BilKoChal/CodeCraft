@@ -1,31 +1,17 @@
-/**
- * CodeCraft — Application Entry Point
- *
- * Initializes React with HashRouter (for GitHub Pages compatibility),
- * registers the service worker for PWA/offline support.
- */
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { HashRouter } from 'react-router-dom';
 import App from './App';
-import './index.css';
+import './styles/globals.css';
+import './styles/editor.css';
 
-// Register service worker for PWA support
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/codecraft/sw.js').catch(() => {
-      // Service worker registration failed — app still works without it
-    });
-  });
+const rootElement = document.getElementById('root');
+
+if (!rootElement) {
+  throw new Error('Root element not found. Cannot mount CodeCraft.');
 }
 
-const root = document.getElementById('root');
-if (!root) throw new Error('Root element not found');
-
-createRoot(root).render(
+createRoot(rootElement).render(
   <StrictMode>
-    <HashRouter>
-      <App />
-    </HashRouter>
+    <App />
   </StrictMode>,
 );

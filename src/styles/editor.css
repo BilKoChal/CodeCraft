@@ -1,0 +1,94 @@
+/* ============================================================
+   CodeCraft — Editor Style Overrides
+   
+   These styles override or extend CodeMirror 6's default styling
+   to match the CodeCraft theme. The CM6 theme is configured via
+   the theme system in src/components/Editor/themes.ts, but some
+   global overrides are still needed.
+   ============================================================ */
+
+/* Ensure CM6 fills its container */
+.cm-editor {
+  height: 100%;
+  font-size: var(--font-size-editor);
+  line-height: var(--line-height-editor);
+}
+
+.cm-editor .cm-scroller {
+  overflow: auto;
+  font-family: var(--font-mono);
+}
+
+/* Remove default CM6 border */
+.cm-editor.cm-focused {
+  outline: none;
+}
+
+/* Gutter styling adjustments */
+.cm-editor .cm-gutters {
+  border-right: 1px solid var(--border-default);
+  user-select: none;
+}
+
+/* Active line highlight */
+.cm-editor .cm-activeLine {
+  background: var(--bg-hover);
+}
+
+/* Cursor */
+.cm-editor .cm-cursor {
+  border-left-color: var(--text-primary);
+  border-left-width: 2px;
+}
+
+/* Selection */
+.cm-editor .cm-selectionBackground {
+  background: var(--bg-selection) !important;
+}
+
+/* Search panel inside editor */
+.cm-editor .cm-search {
+  background: var(--bg-sidebar);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 4px 8px;
+}
+
+.cm-editor .cm-search input {
+  background: var(--bg-editor);
+  color: var(--text-primary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  padding: 2px 6px;
+  font-size: 13px;
+}
+
+.cm-editor .cm-search button {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  padding: 2px 8px;
+  cursor: pointer;
+}
+
+.cm-editor .cm-search button:hover {
+  background: var(--border-default);
+}
+
+/* Tooltip (autocomplete, hover info) */
+.cm-tooltip {
+  background: var(--bg-sidebar);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+}
+
+.cm-tooltip-autocomplete > ul > li {
+  padding: 2px 8px;
+}
+
+.cm-tooltip-autocomplete > ul > li[aria-selected] {
+  background: var(--bg-hover);
+  color: var(--text-accent);
+}

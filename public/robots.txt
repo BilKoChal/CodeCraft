@@ -1,0 +1,28 @@
+# CodeCraft
+
+Fast, zero-install, browser-based code editor for multi-file projects.
+
+## Development
+
+```bash
+npm install
+npm run dev
+```
+
+## Build
+
+```bash
+npm run build
+npm run preview
+```
+
+## Features
+
+- CodeMirror 6 editor with JavaScript/JSX support
+- Multi-file projects with file tree sidebar
+- Sandboxed JavaScript code execution (Web Worker)
+- Live preview for HTML/CSS/JS
+- Auto-save to IndexedDB
+- ZIP import/export
+- PWA with offline support
+- Dark theme (Catppuccin Mocha-inspired)

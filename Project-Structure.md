@@ -1,96 +1,105 @@
-# CodeCraft — Project Structure
+# CodeCraft — Project Structure (Root)
 
-**Project:** CodeCraft — Lightweight Browser-Based Code Editor  
-**Tech Stack:** React 18+ / TypeScript / Vite 5+ / CodeMirror 6 / Zustand / Dexie.js / Tailwind CSS 4  
-**Last Updated:** 2026-05-27  
-**Phase Completed:** PH0 (Scaffolding & Infrastructure)  
+**Last Updated:** 2026-05-28 (after TASK-01 + TASK-02)
 
 ---
 
-## Current Source Code Structure
+## Overall Project Layout
 
 ```
-codecraft/                              # Project root
-├── .github/
-│   └── workflows/
-│       ├── deploy.yml                  # GitHub Pages auto-deployment
-│       └── ci.yml                      # Type check, lint, build verification
-├── Project-Informations/               # Planning & documentation
+codecraft/                                   # Project root
+├── Project-Structure.md                     # This file — overall structure overview
+├── AGENT_PROMPT.md                          # Agent prompt copy for reference
+├── Project-Informations/                    # All project meta-data, plans, reports, worklogs
 │   ├── planing/
-│   │   ├── Project-Plan.md
-│   │   ├── Original-Reports/           # OGF reports (never modify)
-│   │   └── Final-Reports/              # FIN reports (enriched)
 │   ├── worklogs/
-│   │   ├── 0-Worklog-20260527-163000.md
-│   │   └── PH0-Worklog-Scaffolding-20260527-170000.md
-│   ├── analyses/                       # (placeholder for future)
+│   ├── analyses/ (placeholder)
 │   ├── development/
-│   │   └── PH0-Bulk/
-│   │       └── Implementation-Notes.md
+│   │   ├── TASK-01/                         # ✅ Project scaffold
+│   │   └── TASK-02/                         # ✅ Zustand stores
 │   └── Structure.md
-├── public/
-│   └── favicon.svg                     # CodeCraft logo (brackets + slash)
-├── src/
-│   ├── components/
-│   │   ├── Editor/                     # PH1-02: CodeMirror editor wrapper
-│   │   ├── Tabs/                       # PH1-04/05: Tab bar components
-│   │   ├── Layout/                     # PH1-08/09/10: TitleBar, InfoStrip, Layout
-│   │   ├── Panels/                     # PH2-03: FileNavigator, ConsoleDrawer
-│   │   ├── Project/                    # PH2-02: ProjectManager, WelcomeScreen
-│   │   └── Theme/                      # PH3-06/07: ThemeSelector, ThemeEditor
-│   ├── stores/
-│   │   ├── editorStore.ts              # Editor state (tabs, active, cursor)
-│   │   ├── projectStore.ts             # Project state (files, folders)
-│   │   ├── settingsStore.ts            # Settings with LocalStorage persist
-│   │   └── index.ts                    # Barrel export
-│   ├── services/
-│   │   ├── storage.ts                  # Dexie.js database + LocalStorage helpers
-│   │   ├── exportImport.ts             # JSZip .zip export/import
-│   │   ├── autoSave.ts                 # Debounced auto-save (PH1-11)
-│   │   └── storageQuota.ts            # Quota monitoring + persistent storage
-│   ├── workers/
-│   │   └── (PH5-01/04: formatter, linter, pyodide workers)
-│   ├── execution/
-│   │   └── (PH4-01–07: JS, TS, HTML, Python, C++ executors)
-│   ├── themes/
-│   │   └── definitions/
-│   │       └── (PH3-02–04: 10 theme definition files)
-│   ├── hooks/
-│   │   ├── useMediaQuery.ts            # Reactive CSS media query (useSyncExternalStore)
-│   │   ├── useTheme.ts                 # Theme switching with persistence
-│   │   ├── useAutoSave.ts              # (PH1-11 placeholder)
-│   │   ├── useKeyboardShortcuts.ts     # (PH6-02 placeholder)
-│   │   └── index.ts                    # Barrel export
-│   ├── utils/
-│   │   ├── languageDetection.ts        # File extension → language mapping
-│   │   ├── binaryDetection.ts          # Binary file detection + MIME types
-│   │   ├── fileUtils.ts                # Path manipulation, size formatting
-│   │   └── editorConfig.ts             # .editorconfig parser (basic)
-│   ├── types/
-│   │   ├── project.ts                  # Project, FileNode, FileContent, BinaryFileData
-│   │   ├── tab.ts                      # TabState, TabManagerState
-│   │   ├── theme.ts                    # ThemeDefinition, ThemeColors, CustomTheme
-│   │   ├── execution.ts                # ExecutionResult, language tiers
-│   │   └── index.ts                    # Barrel export
-│   ├── App.tsx                         # Root component with route definitions
-│   ├── main.tsx                        # Entry point: HashRouter + SW registration
-│   └── index.css                       # Tailwind + theme CSS custom properties
-├── Project-Structure.md                # This file
-├── LICENSE                             # MIT License
-├── README.md                           # Project documentation
-├── package.json
-├── tsconfig.json
-├── tsconfig.app.json                   # With path aliases
-├── tsconfig.node.json
-├── vite.config.ts                      # Tailwind, PWA, chunk splitting, GitHub Pages
-└── eslint.config.js                    # ESLint + react-hooks + typescript-eslint
+├── src/                                     # Application source code
+│   ├── components/                          # React components (placeholder dirs)
+│   │   ├── Editor/
+│   │   ├── Sidebar/
+│   │   ├── Tabs/
+│   │   ├── Layout/
+│   │   ├── Modals/
+│   │   ├── StatusBar/
+│   │   └── Console/
+│   ├── hooks/                               # Custom React hooks
+│   ├── stores/                              # ✅ Zustand state stores
+│   │   ├── index.ts                         # Barrel exports
+│   │   ├── projectStore.ts                  # Project navigation state
+│   │   ├── editorStore.ts                   # Editor content + dirty tracking
+│   │   ├── uiStore.ts                       # UI layout state
+│   │   └── consoleStore.ts                  # Console output state
+│   ├── db/                                  # Dexie.js database (TASK-03)
+│   ├── utils/                               # ✅ Utility functions
+│   │   ├── id.ts                            # UUID generation
+│   │   ├── languageDetection.ts             # Language detection
+│   │   └── storage.ts                       # localStorage helper
+│   ├── pages/                               # Page components
+│   ├── types/                               # ✅ Shared TypeScript types
+│   │   └── index.ts
+│   ├── styles/                              # ✅ CSS styles
+│   │   ├── globals.css                      # Theme variables + global reset
+│   │   └── editor.css                       # CodeMirror 6 overrides
+│   ├── App.tsx                              # ✅ Root component with panel layout
+│   ├── main.tsx                             # ✅ React entry point
+│   └── vite-env.d.ts                        # ✅ Vite type declarations
+├── public/                                  # ✅ Static assets
+│   ├── favicon.svg
+│   ├── robots.txt
+│   └── icons/                               # PWA icons (to be created)
+├── .github/workflows/deploy.yml             # ✅ GitHub Pages auto-deploy
+├── package.json                             # ✅ Dependencies and scripts
+├── vite.config.ts                           # ✅ Vite configuration
+├── tsconfig.json                            # ✅ TypeScript project references
+├── tsconfig.app.json                        # ✅ App TS config
+├── tsconfig.node.json                       # ✅ Node/Vite TS config
+├── index.html                               # ✅ SPA entry point
+├── .gitignore                               # ✅ Ignore patterns
+└── node_modules/                            # Installed dependencies
 ```
 
-## Build Configuration Notes
+## Phase Status
 
-- **Base path:** `/codecraft/` (for GitHub Pages)
-- **Routing:** HashRouter (no 404.html hack needed)
-- **Chunk splitting:** Function-based `manualChunks()` for react-vendor, codemirror-core, codemirror-extensions, storage, state, dnd-kit
-- **PWA:** vite-plugin-pwa with autoUpdate, WASM caching (20MB limit)
-- **Minification:** Terser with `drop_console` and `drop_debugger`
-- **Target:** esnext
+| Phase | Status | Key Deliverables |
+|-------|--------|-----------------|
+| **Phase 0** | 🟡 In Progress (M1 started) | TASK-01 ✅, TASK-02 ✅, 18 tasks remaining |
+| **Phase 1** | ⚪ Not Started | Multi-language, nested folders, theme switcher |
+| **Phase 2** | ⚪ Not Started | Terminal, drag-and-drop, C/Lua/Ruby support |
+| **Phase 3** | ⚪ Not Started | C++/Java/PHP, HMR, collaboration |
+
+## Task Status
+
+| Task | Status | Description |
+|------|--------|-------------|
+| TASK-01 | ✅ Done | Project scaffold |
+| TASK-02 | ✅ Done | Zustand stores |
+| TASK-03 | ⚪ Pending | Dexie database schema + queries |
+| TASK-04 | ⚪ Pending | CodeMirror 6 editor component |
+| TASK-05 | ⚪ Pending | Tab bar component |
+| TASK-06 | ⚪ Pending | Auto-save hook |
+| TASK-07 | ⚪ Pending | File tree sidebar component |
+| TASK-08 | ⚪ Pending | File CRUD operations |
+| TASK-09 | ⚪ Pending | Project list page + CRUD |
+| TASK-10 | ⚪ Pending | ZIP import/export |
+| TASK-11 | ⚪ Pending | JS code runner |
+| TASK-12 | ⚪ Pending | Console output panel |
+| TASK-13 | ⚪ Pending | Dark theme + CSS variables |
+| TASK-14 | ⚪ Pending | Status bar component |
+| TASK-15 | ⚪ Pending | Keyboard shortcuts |
+| TASK-16 | ⚪ Pending | PWA setup |
+| TASK-17 | ⚪ Pending | Live preview |
+| TASK-18 | ⚪ Pending | Skeleton loading |
+| TASK-19 | ⚪ Pending | Deploy + testing |
+| TASK-20 | ⚪ Pending | Sample project template |
+
+## Quick Links
+
+- [Project Plan](Project-Informations/planing/Project-Plan.md)
+- [Architecture Research (OGF)](Project-Informations/planing/Original-Reports/Generic-Research-1-OGF.md)
+- [UI/UX Research (OGF)](Project-Informations/planing/Original-Reports/UI-UX-Research-2-OGF.md)
+- [Code Runner Research (OGF)](Project-Informations/planing/Original-Reports/Code-Runner-Research-3-OGF.md)

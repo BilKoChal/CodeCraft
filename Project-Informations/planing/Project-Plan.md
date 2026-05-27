@@ -1,304 +1,291 @@
 # CodeCraft — Project Plan
 
-**Project Name:** CodeCraft  
-**Date Created:** 2026-05-27  
-**Version:** 1.0  
-**License:** MIT  
-**Repository:** TBD (GitHub)  
-**Hosting:** GitHub Pages  
+**Created:** 2026-05-28  
+**Status:** Phase 0 — Planning Complete  
+**Version:** 1.0
 
 ---
 
-## 1. Project Vision
+## 1. Project Overview
 
-CodeCraft is a lightweight, browser-based code editor in the spirit of Notepad++ — not a full IDE, but far more capable than a simple online playground. It runs entirely client-side, requires no backend, and can be hosted on GitHub Pages. The target audience sits between students/learners and professional developers: people who want a fast, zero-install, privacy-first tool for writing, running, and managing multi-file projects directly in the browser.
+**CodeCraft** is a fast, zero-install, browser-based code editor for multi-file projects. It requires no backend, is privacy-first, and deploys to GitHub Pages. Built with React + TypeScript + Vite + CodeMirror 6, it aims to deliver a professional IDE experience entirely in the browser with local code execution support.
 
-### Design Philosophy: "Paper Desk"
+### Core Principles
 
-The code is the star. Everything else recedes until needed. No persistent sidebar, no heavy chrome — just a tab-centric, distraction-free workspace with a warm, distinctive identity that sets it apart from the sea of VS Code clones.
-
----
-
-## 2. Technology Stack
-
-| Layer | Technology | Package | Version |
-|-------|-----------|---------|---------|
-| **Runtime** | React 18+ | `react` | 18.x |
-| **Language** | TypeScript | `typescript` | 5.x |
-| **Build** | Vite 5+ | `vite` | 5.x |
-| **Editor** | CodeMirror 6 | `@uiw/react-codemirror` | 4.25.x |
-| **Language Support** | CM6 Language Data | `@codemirror/language-data` | 6.5.x |
-| **State Management** | Zustand | `zustand` | 5.x |
-| **Storage (structured)** | Dexie.js (IndexedDB) | `dexie` | 4.4.x |
-| **Storage (prefs)** | LocalStorage | Built-in | — |
-| **Styling** | Tailwind CSS 4 | `@tailwindcss/vite` | 4.x |
-| **Routing** | React Router 6 (HashRouter) | `react-router-dom` | 6.x |
-| **Emmet** | Official CM6 Plugin | `@emmetio/codemirror6-plugin` | 0.4.x |
-| **Formatting** | Prettier Standalone | `prettier` | 3.8.x |
-| **Lightweight Formatting** | js-beautify | `js-beautify` | 1.15.x |
-| **Linting** | ESLint Browser Build | `eslint-linter-browserify` | 10.4.x |
-| **Linting UI** | CM6 Lint | `@codemirror/lint` | 6.9.x |
-| **JS Execution** | Sandboxed iframe | Built-in | — |
-| **TS Transpilation** | Sucrase | `sucrase` | 3.35.x |
-| **Python Execution** | Pyodide (WASM) | `pyodide` | 0.29.x |
-| **C/C++ Execution** | JSCPP | `JSCPP` | 2.0.x |
-| **ZIP Export/Import** | JSZip | `jszip` | 3.10.x |
-| **Drag-and-Drop** | dnd-kit | `@dnd-kit/core` | 6.3.x |
-| **Icons** | Lucide React | `lucide-react` | latest |
-| **PWA** | vite-plugin-pwa + Workbox | `vite-plugin-pwa` | latest |
-| **CI/CD** | GitHub Actions | — | — |
-| **Hosting** | GitHub Pages | — | — |
+- **Zero install** — Open a URL, start coding. No setup, no accounts, no backend.
+- **Privacy first** — All data stays in the browser (IndexedDB + localStorage). Nothing leaves the device.
+- **Fast** — Target <170KB gzipped initial load. Skeleton loading, code-split languages.
+- **Progressive** — Phase 0 delivers a polished prototype; each phase adds depth without breaking what works.
 
 ---
 
-## 3. Phase 0 — Project Scaffolding & Infrastructure
+## 2. Tech Stack
 
-**Goal:** Set up the development environment, project structure, CI/CD, and deployment pipeline.
-
-| Task ID | Task | Description | Estimated Effort |
-|---------|------|-------------|-----------------|
-| PH0-01 | Initialize Vite + React + TypeScript project | `npm create vite@latest`, configure tsconfig, add path aliases | 0.5h |
-| PH0-02 | Install and configure Tailwind CSS 4 | `@tailwindcss/vite` plugin, custom `@theme` tokens, CSS custom properties | 1h |
-| PH0-03 | Set up project folder structure | Create `src/components/`, `src/stores/`, `src/services/`, `src/themes/`, `src/hooks/`, `src/utils/`, `src/types/`, `src/workers/` | 0.5h |
-| PH0-04 | Configure Vite for GitHub Pages | `base` path, `HashRouter` setup, manual chunk splitting, `vite.config.ts` | 1h |
-| PH0-05 | Set up GitHub Actions CI/CD | Deploy workflow (`.github/workflows/deploy.yml`), lint + type-check workflow | 1h |
-| PH0-06 | Set up ESLint + Prettier (dev tooling) | Config for the project itself (not the in-browser editor feature) | 0.5h |
-| PH0-07 | Configure PWA (vite-plugin-pwa) | Service worker, Workbox config, offline caching strategy | 1h |
-| PH0-08 | Create README.md and LICENSE | MIT license, project description, setup instructions | 0.5h |
-
-**Phase 0 Total:** ~6 hours
-
----
-
-## 4. Phase 1 — Core Editor & Tab System
-
-**Goal:** A working code editor with multi-tab support, file switching, and basic state management.
-
-| Task ID | Task | Description | Estimated Effort |
-|---------|------|-------------|-----------------|
-| PH1-01 | Implement Zustand store slices | `editorStore` (tabs, active tab, cursor, scroll), `projectStore` (files, folders), `settingsStore` (theme, preferences, persist middleware) | 2h |
-| PH1-02 | Create CodeMirror editor component | Wrap `@uiw/react-codemirror`, configure base extensions (line numbers, bracket matching, active line, fold, search) | 3h |
-| PH1-03 | Implement language detection & lazy-loading | Use `@codemirror/language-data` to detect language from file extension, dynamic import on file open, cache loaded extensions | 2h |
-| PH1-04 | Build Tab Bar component (desktop) | Horizontal scrollable tabs, active tab indicator (amber border), dirty dot, close button, "+" new tab, overflow dropdown | 3h |
-| PH1-05 | Build Tab Bar component (mobile) | Bottom tab bar with file type icons, Run button, touch-friendly targets | 2h |
-| PH1-06 | Implement tab state management | Open/close/switch/pin/reorder tabs, save/restore cursor & scroll state, LRU eviction at 30+ tabs | 3h |
-| PH1-07 | Implement drag-and-drop tab reordering | `@dnd-kit/core` + `@dnd-kit/sortable`, horizontal list strategy | 1.5h |
-| PH1-08 | Build Title Bar component | Logo, project name dropdown trigger, menu bar (File/Edit/View/Run/Help), global actions (theme toggle, search, settings) | 2h |
-| PH1-09 | Build Info Strip component | Cursor position, encoding, language mode, indent type, Run button | 1h |
-| PH1-10 | Build main Editor Layout | CSS Grid layout (titlebar → tabbar → editor → infostrip), `100dvh` height, responsive breakpoint switching | 2h |
-| PH1-11 | Implement auto-save | Debounced save to IndexedDB (1s after last keystroke), dirty tracking | 1.5h |
-
-**Phase 1 Total:** ~23 hours
+| Layer | Technology | Rationale |
+|-------|-----------|-----------|
+| **UI Framework** | React 19 + TypeScript 5 | Type safety, component ecosystem, DX |
+| **Editor Engine** | CodeMirror 6 via `@uiw/react-codemirror` | Lightweight, extensible, best React integration |
+| **Build Tool** | Vite 6 | Fast HMR, native ESM, Rollup code-splitting |
+| **Styling** | CSS Custom Properties + CSS Modules | Pixel-precise IDE layouts, zero-runtime theming |
+| **Layout** | `react-resizable-panels` | 8KB, built by React team member, auto-persists layout |
+| **State** | Zustand + persist + immer middleware | 1KB, selector re-renders, localStorage sync |
+| **Persistence** | Dexie.js (IndexedDB) + localStorage | Reactive queries via `useLiveQuery`, schema migrations |
+| **ZIP** | fflate (~8KB gzipped) | Fastest bidirectional ZIP library |
+| **Icons** | Lucide React | Tree-shakeable, MIT, 1600+ icons, ~5KB for 20 icons |
+| **PWA** | `vite-plugin-pwa` + Workbox | Auto service worker + manifest, offline support |
+| **Routing** | Hash routing (Phase 0), Browser routing (Phase 1) | Zero GitHub Pages config issues |
+| **Deploy** | GitHub Actions → GitHub Pages | Automatic on push to main |
+| **Code Runner** | Web Worker + Blob URL + `new Function('console', code)` | Off-thread, terminatable, sandboxed JS execution |
+| **TS Transpilation** | Sucrase (~150KB) | Fast type stripping for Phase 0 |
 
 ---
 
-## 5. Phase 2 — Multi-File Projects & Storage
+## 3. Phase 0 — Quick Prototyping (v1.0)
 
-**Goal:** Full multi-file project support with create/rename/delete/reorder files, IndexedDB persistence, and .zip export/import.
+**Goal:** A working, polished single-language code editor that creates a strong first impression. Deployable in ~7-8 days.
 
-| Task ID | Task | Description | Estimated Effort |
-|---------|------|-------------|-----------------|
-| PH2-01 | Implement Dexie.js database | Define schema (projects, files, fileContents, binaryFiles, settings, customThemes, autoSaves), migration strategy | 2h |
-| PH2-02 | Build Project Manager page | List projects, create/delete/rename projects, "Open Recent" on startup | 2h |
-| PH2-03 | Build "Sheet Stack" File Navigator | Slide-over panel with search-first, flat-with-groups layout, folder collapse, action buttons (New File, New Folder, Import, Export) | 4h |
-| PH2-04 | Implement file CRUD operations | Create file/folder, rename, delete (with inline confirmation), duplicate, move between folders | 3h |
-| PH2-05 | Implement context menus for files | Right-click menu with New File, Rename, Delete, Duplicate, Move To, Copy Path | 1.5h |
-| PH2-06 | Implement drag-and-drop file moving | Drag file onto folder, reorder within folder, visual feedback | 2h |
-| PH2-07 | Implement .zip export | JSZip: iterate all files, build ZIP, add project metadata, trigger download | 2h |
-| PH2-08 | Implement .zip import | Parse uploaded .zip, validate structure, create project with files, handle binary files as ArrayBuffer | 2.5h |
-| PH2-09 | Handle binary files | Detection by extension, preview pane (image/SVG), ArrayBuffer storage, binary-aware export/import | 2h |
-| PH2-10 | Implement .editorconfig support | Lightweight regex-based parser, apply settings to project configuration | 1h |
-| PH2-11 | Implement welcome/startup screen | "Open Recent" projects list, "New Project" button, "Import .zip" button | 1.5h |
-| PH2-12 | Storage quota monitoring | `navigator.storage.estimate()`, warn user when approaching limits, request persistent storage | 1h |
+**Motto:** "Open the page, see a professional IDE, type code, see output — in under 5 seconds."
 
-**Phase 2 Total:** ~24.5 hours
+### 3.1 Phase 0 Features
 
----
+| # | Feature | Priority | Description |
+|---|---------|----------|-------------|
+| P0-01 | Code Editor (JS/JSX) | Must | CodeMirror 6 with syntax highlighting, line numbers, bracket matching, auto-close brackets, basic autocomplete |
+| P0-02 | File Tree Sidebar | Must | Collapsible, flat file list, context menu (new/rename/delete), file icons by type |
+| P0-03 | Multi-file Tabs | Must | Open multiple files, switch tabs, close buttons, modified indicator dot, horizontal scroll overflow |
+| P0-04 | JS Code Runner | Must | Run JavaScript in sandboxed Web Worker, capture console output, timeout protection |
+| P0-05 | Console Output Panel | Must | Display console.log/warn/error/info, clear button, ANSI-style coloring |
+| P0-06 | Auto-save to IndexedDB | Must | Debounced 1s save on every change via Dexie.js |
+| P0-07 | Dark Theme | Must | Catppuccin Mocha-inspired dark theme, single theme, CSS custom properties |
+| P0-08 | Project CRUD | Must | Create, open, delete projects; project list landing page |
+| P0-09 | ZIP Export/Import | Must | Download project as .zip, upload .zip to create project |
+| P0-10 | Status Bar | Should | Line/column, language indicator, encoding, save status |
+| P0-11 | PWA | Should | Installable, offline-capable, manifest + service worker |
+| P0-12 | Keyboard Shortcuts | Should | Ctrl+S save, Ctrl+B toggle sidebar, Ctrl+J toggle panel, Ctrl+W close tab, Ctrl+/ comment |
+| P0-13 | Live Preview | Should | Sandboxed iframe with srcdoc for HTML/CSS/JS preview, debounced auto-refresh |
+| P0-14 | Skeleton Loading | Should | Show IDE structure outline while assets load |
 
-## 6. Phase 3 — Themes & Design System
+### 3.2 Phase 0 — What's NOT Included
 
-**Goal:** Complete the "Paper Desk" design identity with 10 built-in themes, custom theme support, and full responsive design.
+- ❌ Multiple language support (only JS/JSX in Phase 0)
+- ❌ Nested folder support in file tree
+- ❌ Light theme / theme switcher
+- ❌ Settings modal
+- ❌ Search & replace across files (current-file only via CM6)
+- ❌ Terminal (xterm.js)
+- ❌ Collaboration
+- ❌ Drag and drop
+- ❌ TypeScript execution (syntax highlighting only)
 
-| Task ID | Task | Description | Estimated Effort |
-|---------|------|-------------|-----------------|
-| PH3-01 | Create CSS custom property system | Define all semantic tokens (surface, text, accent, border, syntax, gutter, selection), `data-theme` attribute switching | 3h |
-| PH3-02 | Build "Cosmic Dusk" default theme | Dark navy + warm amber, CM6 `EditorView.theme` + `HighlightStyle`, complete syntax tokens | 2h |
-| PH3-03 | Build "Morning Paper" light theme | Warm off-white, charcoal text, amber accent | 1.5h |
-| PH3-04 | Build 8 remaining built-in themes | Midnight Oil, Forest Canopy, Arctic Clear, Ember, Sakura, Terminal Green, Solar Flare, Blueprint | 4h |
-| PH3-05 | Implement theme switching | `setTheme()` with LocalStorage persistence, CM6 extension reconfiguration, `data-theme` attribute swap | 1.5h |
-| PH3-06 | Build Theme Selector UI | Dropdown/panel with theme previews (mini color swatches), dark/light filter, keyboard navigation | 2h |
-| PH3-07 | Build Custom Theme Editor | Live-preview editor with color pickers, JSON import/export, save to IndexedDB | 4h |
-| PH3-08 | Refine responsive design | Test and adjust all breakpoints (xs through 2xl), mobile toolbar simplification, virtual keyboard handling | 3h |
-| PH3-09 | Build menu system | Dropdown menus (File, Edit, View, Run, Help), keyboard shortcut display, command palette (Ctrl+P) | 3h |
-| PH3-10 | Build Settings panel | Preferences UI (font size, tab size, word wrap, auto-save, format on save, keybindings) | 2h |
+### 3.3 Phase 0 Milestones
 
-**Phase 3 Total:** ~26 hours
+| Milestone | Days | Deliverable |
+|-----------|------|-------------|
+| **M1: Project Scaffold** | Day 1 | Vite + React + TS + Zustand + Dexie + Tailwind/CSS setup, folder structure, GitHub Actions |
+| **M2: Editor Integration** | Day 2-3 | CodeMirror 6 with JS support, tab system, auto-save |
+| **M3: File Management** | Day 3-4 | File tree sidebar, new/delete/rename file, IndexedDB persistence |
+| **M4: Project Management** | Day 4-5 | Create/delete project, project list page, ZIP import/export |
+| **M5: Code Runner + Console** | Day 5-6 | Web Worker JS execution, console capture, output panel |
+| **M6: Polish + PWA** | Day 6-7 | Dark theme, status bar, keyboard shortcuts, PWA manifest, live preview |
+| **M7: Deploy + Test** | Day 7-8 | GitHub Pages deploy, cross-browser testing, bug fixes |
 
----
+### 3.4 Phase 0 Task Breakdown
 
-## 7. Phase 4 — Code Execution Engine
-
-**Goal:** Run JavaScript, TypeScript, and HTML natively; lazy-load Python (Pyodide) and C/C++ (JSCPP).
-
-| Task ID | Task | Description | Estimated Effort |
-|---------|------|-------------|-----------------|
-| PH4-01 | Implement JS execution (sandboxed iframe) | Create iframe with `sandbox="allow-scripts"`, `srcdoc`, capture console.log/warn/error via `postMessage`, timeout handling | 3h |
-| PH4-02 | Implement HTML live preview | Render HTML files in a sandboxed iframe with CSS/JS linking from project, hot reload on save | 2h |
-| PH4-03 | Implement TypeScript execution | Sucrase transpile (TS → JS), then run through iframe sandbox | 2h |
-| PH4-04 | Build Console/Output drawer | Resizable bottom drawer, stdout/stderr/error display, clear button, copy output | 2.5h |
-| PH4-05 | Implement "Run" button & logic | Detect language, choose executor, show loading state, stream output to console drawer, handle errors | 2h |
-| PH4-06 | Implement Python execution (Pyodide) | Lazy-load Pyodide in Web Worker, stdout/stderr capture, 12MB download progress bar, cache worker for session | 4h |
-| PH4-07 | Implement C/C++ execution (JSCPP) | Integrate JSCPP interpreter, basic stdin support, display limitations warning | 2h |
-| PH4-08 | Build execution progress/loading UI | Progress bar for Pyodide download, spinner for other engines, inline error messages | 1.5h |
-| PH4-09 | Handle multi-file project execution | Link CSS/JS files in HTML preview, resolve imports within project files | 2h |
-
-**Phase 4 Total:** ~21 hours
-
----
-
-## 8. Phase 5 — Formatting, Linting & Emmet
-
-**Goal:** Integrate Prettier, ESLint, and Emmet for a professional editing experience.
-
-| Task ID | Task | Description | Estimated Effort |
-|---------|------|-------------|-----------------|
-| PH5-01 | Implement Prettier formatting (Web Worker) | Lazy-load Prettier standalone in Web Worker, format on save + format on demand (Shift+Alt+F), configurable options | 3h |
-| PH5-02 | Implement js-beautify lightweight formatter | For quick formatting when Prettier isn't loaded, HTML/CSS/JSON support | 1.5h |
-| PH5-03 | Build Formatter Settings UI | Toggle format-on-save, format-on-type, choose formatter (Prettier/basic/none), Prettier config options | 1.5h |
-| PH5-04 | Implement ESLint linting (Web Worker) | Lazy-load `eslint-linter-browserify`, integrate with `@codemirror/lint`, configurable rules | 3h |
-| PH5-05 | Implement lightweight linting for non-JS | Regex-based checks for Python, HTML (htmlhint), JSON (parse validation), basic SQL | 2h |
-| PH5-06 | Build Lint Diagnostics UI | Gutter icons, inline error messages, diagnostics panel, F8/Shift+F8 navigation | 2h |
-| PH5-07 | Integrate Emmet | `@emmetio/codemirror6-plugin`, HTML/CSS abbreviation expansion, Tab key binding, JSX support | 2h |
-| PH5-08 | Handle Tab key priority | Emmet vs autocomplete vs indentation — configurable priority, smart context detection | 1.5h |
-
-**Phase 5 Total:** ~17 hours
+| Task ID | Task | Milestone | Estimated Effort | Sub-agents |
+|---------|------|-----------|------------------|------------|
+| TASK-01 | Project scaffold (Vite + React + TS + deps + GitHub Actions) | M1 | 0.5 day | No |
+| TASK-02 | Zustand stores (project, editor, UI, console) | M1 | 0.5 day | No |
+| TASK-03 | Dexie database schema + queries | M1 | 0.5 day | No |
+| TASK-04 | CodeMirror 6 editor component | M2 | 1 day | Optional |
+| TASK-05 | Tab bar component | M2 | 0.5 day | No |
+| TASK-06 | Auto-save hook | M2 | 0.5 day | No |
+| TASK-07 | File tree sidebar component | M3 | 1 day | Optional |
+| TASK-08 | File CRUD operations (IndexedDB) | M3 | 0.5 day | No |
+| TASK-09 | Project list page + CRUD | M4 | 1 day | Optional |
+| TASK-10 | ZIP import/export (fflate) | M4 | 0.5 day | No |
+| TASK-11 | JS code runner (Web Worker) | M5 | 1 day | Optional |
+| TASK-12 | Console output panel | M5 | 0.5 day | No |
+| TASK-13 | Dark theme + CSS custom properties | M6 | 0.5 day | No |
+| TASK-14 | Status bar component | M6 | 0.5 day | No |
+| TASK-15 | Keyboard shortcuts | M6 | 0.5 day | No |
+| TASK-16 | PWA setup (vite-plugin-pwa) | M6 | 0.5 day | No |
+| TASK-17 | Live preview (iframe + srcdoc) | M6 | 0.5 day | No |
+| TASK-18 | Skeleton loading states | M6 | 0.25 day | No |
+| TASK-19 | Deploy + cross-browser testing | M7 | 1 day | No |
+| TASK-20 | Sample project template | M7 | 0.25 day | No |
 
 ---
 
-## 9. Phase 6 — Polish, PWA & Launch
+## 4. Phase 1 — Multi-File Workflows & Languages (v1.1)
 
-**Goal:** Final polish, performance optimisation, PWA completeness, documentation, and public launch.
+**Goal:** Transform CodeCraft from a single-language prototype into a multi-language, multi-project workspace.
 
-| Task ID | Task | Description | Estimated Effort |
-|---------|------|-------------|-----------------|
-| PH6-01 | Performance audit & optimisation | Lighthouse testing, bundle size analysis, lazy-loading verification, memory leak checks | 3h |
-| PH6-02 | Keyboard shortcuts system | Configurable keybindings, conflict detection, shortcut reference panel | 2h |
-| PH6-03 | Command palette (Ctrl+P) | Fuzzy file search, command search, recent files | 2h |
-| PH6-04 | PWA polish | Offline mode testing, install prompt, app icon, splash screen, update notification | 2h |
-| PH6-05 | Project templates | Starter templates: Hello World (JS/Python/HTML), Calculator, Todo App, Portfolio | 2h |
-| PH6-06 | Accessibility audit | Keyboard navigation, ARIA labels, screen reader support, contrast checks | 2h |
-| PH6-07 | Cross-browser testing | Chrome, Firefox, Safari, Edge, mobile Safari, Chrome Android | 2h |
-| PH6-08 | Documentation | README, CONTRIBUTING.md, architecture docs, extension guide, deployment guide | 3h |
-| PH6-09 | GitHub repo setup | Issue templates, PR template, CODE_OF_CONDUCT.md, dependabot, branch protection | 1.5h |
-| PH6-10 | Launch preparation | Final QA, demo project, social media assets, first release tag (v1.0.0) | 2h |
-
-**Phase 6 Total:** ~21.5 hours
-
----
-
-## 10. Long-Term Roadmap
-
-### v2.0 — Collaboration & Extensions
-
-| Feature | Description |
-|---------|-------------|
-| **Real-time collaboration** | WebSocket-based, CRDT for conflict resolution, shared cursors |
-| **Extension system** | Plugin API (`registerLanguage`, `registerFormatter`, `registerTheme`, `registerCommand`), extension gallery |
-| **Git integration** | Commit to GitHub via OAuth, diff viewer, branch management |
-| **Live Share** | Shareable URLs for pair programming (WebRTC) |
-| **Language server protocol** | LSP client for richer IntelliSense (TypeScript, Python, etc.) |
-
-### v3.0 — Platform & Ecosystem
-
-| Feature | Description |
-|---------|-------------|
-| **Desktop app** | Tauri-based desktop wrapper (same React codebase) |
-| **Cloud sync** | Optional encrypted cloud backup (WebDAV / S3) |
-| **Code snippets library** | Community snippet sharing, language-specific templates |
-| **Integrated tutorial system** | Interactive coding lessons for beginners (JS, Python, HTML) |
-| **Ruby execution** | Opal transpiler or ruby.wasm lazy-load |
-| **PHP execution** | php-wasm lazy-load |
-| **Java execution** | CheerpJ integration (opt-in heavy download) |
+| # | Feature | Description |
+|---|---------|---------|
+| P1-01 | Multi-language syntax | HTML, CSS, JSON, TypeScript highlighting (lazy-loaded CM6 language packages) |
+| P1-02 | TypeScript execution | Sucrase transpilation in Web Worker |
+| P1-03 | Nested folders | Folder hierarchy in file tree, create/rename/move folders |
+| P1-04 | Light theme + theme switcher | Light/dark/system preference toggle |
+| P1-05 | Settings modal | Font size, tab size, word wrap, auto-save config |
+| P1-06 | Search & replace across files | Dedicated sidebar search panel |
+| P1-07 | Multiple projects | Project list with switching |
+| P1-08 | File rename/move | Between folders |
+| P1-09 | Browser routing | Switch from hash to browser routing + 404.html trick |
+| P1-10 | Python support | Pyodide integration (lazy-loaded from CDN) |
+| P1-11 | CSS hot reload | Inject CSS updates without full iframe refresh |
 
 ---
 
-## 11. Task Dependency Graph
+## 5. Phase 2 — Advanced Editor Features (v2.0)
+
+**Goal:** Professional-grade features that make CodeCraft competitive with desktop editors.
+
+| # | Feature | Description |
+|---|---------|---------|
+| P2-01 | Terminal | xterm.js integration for interactive stdin/stdout |
+| P2-02 | Drag and drop | @dnd-kit for file tree reordering and tab reordering |
+| P2-03 | C language support | JSCPP integration |
+| P2-04 | Lua support | wasmoon (~460KB WASM) |
+| P2-05 | Ruby support | Opal transpiler (~2MB) |
+| P2-06 | Emmet support | HTML/CSS abbreviation expansion |
+| P2-07 | Linting | ESLint integration via Web Workers |
+| P2-08 | Pinned tabs | Icon-only tabs locked to the left |
+| P2-09 | Template projects | Starter templates (React, Vanilla JS, Python, etc.) |
+| P2-10 | Split editor | Side-by-side editing |
+
+---
+
+## 6. Phase 3 — Power User Features (v3.0)
+
+**Goal:** Feature-complete IDE with runtime support for compiled languages.
+
+| # | Feature | Description |
+|---|---------|---------|
+| P3-01 | C++ support | CheerpX (x86-to-WASM virtualization) |
+| P3-02 | Java support | CheerpJ (full JVM in WASM) |
+| P3-03 | PHP support | @php-wasm/web |
+| P3-04 | HMR for JS | Hot module replacement in live preview |
+| P3-05 | Minimap | Code minimap like VS Code |
+| P3-06 | Custom themes | User-created editor themes |
+| P3-07 | Snippets library | User-defined code snippets |
+| P3-08 | Git/Gist integration | Export/import from GitHub Gist (client-side OAuth) |
+| P3-09 | Extension system | Plugin API for community extensions |
+| P3-10 | Mobile responsive preview | Device frame toggle (iPhone, iPad, Desktop) |
+| P3-11 | Collaboration | WebRTC-based real-time editing |
+
+---
+
+## 7. Architecture Summary
+
+### 7.1 Data Flow
 
 ```
-PH0 ────────────────────────────────────────────────────────────►
-  │
-  ▼
-PH1 ────────────────────────────────────────────────────────────►
-  │
-  ├──── PH2 (Projects & Storage) ───────────────────────────────►
-  │         │
-  │         └──── PH4 (Code Execution) ─────────────────────────►
-  │
-  ├──── PH3 (Themes & Design) ─────────────────────────────────►
-  │
-  └──── PH5 (Formatting, Linting, Emmet) ──────────────────────►
-         │
-         ▼
-       PH6 (Polish & Launch) ──────────────────────────────────►
+User → CodeMirror Editor → Zustand Store → Dexie.js (IndexedDB)
+                                    ↓
+                              Auto-save (1s debounce)
+                                    ↓
+                              ZIP Export (fflate)
 ```
 
-**Parallel execution opportunities:**
-- PH2, PH3, and PH5 can run in parallel after PH1 completes
-- PH4 depends on PH2 (needs project file system for execution)
-- PH6 depends on all previous phases
+### 7.2 Code Execution Flow
+
+```
+User clicks "Run" → JSRunner.execute(code)
+                       ↓
+                  Create Blob-URL Web Worker
+                       ↓
+                  new Function('console', code)
+                       ↓
+                  Mock console captures output
+                       ↓
+                  postMessage → Main Thread
+                       ↓
+                  Console Store → Console UI
+```
+
+### 7.3 Live Preview Flow
+
+```
+File changes → Debounce 300ms → Build srcdoc HTML
+                                       ↓
+                                  iframe.srcdoc = html
+                                       ↓
+                                  Sandboxed rendering
+```
+
+### 7.4 Component Tree
+
+```
+<App>
+  <ThemeProvider>
+    <WorkspaceLayout>
+      <PanelGroup direction="horizontal">
+        <Panel> → <Sidebar> → <FileTree>
+        <PanelResizeHandle />
+        <Panel>
+          <PanelGroup direction="vertical">
+            <Panel> → <TabBar> + <CodeEditor>
+            <PanelResizeHandle />
+            <Panel> → <BottomPanel> → <ConsoleOutput> / <PreviewFrame>
+          </PanelGroup>
+        </Panel>
+      </PanelGroup>
+      <StatusBar />
+    </WorkspaceLayout>
+  </ThemeProvider>
+</App>
+```
 
 ---
 
-## 12. Risk Register
+## 8. Key Technical Decisions
 
-| Risk | Severity | Probability | Mitigation |
-|------|----------|-------------|------------|
-| Pyodide 12-20 MB download deters users | High | Medium | Show progress bar; cache via service worker; communicate "Python runs in your browser" |
-| GitHub Pages 1 GB repo limit reached | Medium | Low | Host WASM runtimes on CDN; compress builds; monitor bundle size in CI |
-| Mobile UX feels cramped | Medium | Medium | Dedicated mobile layout; progressive disclosure; extensive touch testing |
-| IndexedDB data loss (browser eviction) | Medium | Low | `navigator.storage.persist()`; auto-export reminders; clear data warnings |
-| Emmet Tab key conflicts with autocomplete | Low | Medium | Configurable keymap; context-aware Tab behavior |
-| JSCPP limitations frustrate C++ users | Low | High | Clear warning label: "Basic C++ support for learning" |
-| Community adoption slow | Medium | Medium | Good docs, easy contribution path, demo projects, social presence |
-
----
-
-## 13. Bundle Size Budget
-
-| Component | Estimated Size (gzipped) | Load Strategy |
-|-----------|--------------------------|---------------|
-| App shell (React + Router + Zustand) | ~150 KB | Immediate |
-| CodeMirror 6 core | ~200 KB | Immediate |
-| 5 common languages (JS, TS, HTML, CSS, JSON) | ~80 KB | Immediate |
-| Emmet plugin | ~30 KB | Immediate |
-| Lucide icons (tree-shaken subset) | ~20 KB | Immediate |
-| Tailwind CSS 4 (purged) | ~15 KB | Immediate |
-| **Initial load target** | **~495 KB** | |
-| Prettier standalone | ~600 KB | Lazy (on first format) |
-| ESLint browser build | ~2.5 MB | Lazy (on first lint) |
-| Pyodide (Python WASM) | ~12 MB | Lazy (on first Python run) |
-| JSCPP (C++ interpreter) | ~50 KB | Include immediately |
-| Dexie.js + JSZip | ~80 KB | Lazy (on first project load) |
+| Decision | Choice | Alternative Considered | Rationale |
+|----------|--------|----------------------|-----------|
+| Editor engine | CodeMirror 6 | Monaco Editor | Lighter, modular, faster load |
+| CM6 React binding | @uiw/react-codemirror | Raw CM6 API | Best DX, handles React lifecycle |
+| Layout system | react-resizable-panels | allotment, react-mosaic | Smallest, built by React team, auto-persist |
+| State management | Zustand | Jotai, Redux, Context | 1KB, persist middleware, selector re-renders |
+| IndexedDB library | Dexie.js | idb, localForage | useLiveQuery reactive binding, migrations |
+| ZIP library | fflate | JSZip, client-zip | 8KB, fastest, bidirectional |
+| Icons | Lucide React | Codicons, Material Icons | Tree-shakeable, MIT, modern |
+| JS execution | Web Worker + Blob URL | eval, iframe | Off-thread, terminatable, sandboxed |
+| TS transpilation | Sucrase | @swc/wasm-web, esbuild-wasm | ~150KB, fast, sufficient for type stripping |
+| Routing (Phase 0) | Hash routing | Browser routing | Zero GitHub Pages config issues |
+| Deploy | GitHub Actions | Manual, Netlify | Official, automatic on push to main |
+| Styling | CSS Custom Properties + Modules | Tailwind | Pixel-precise IDE layouts, zero-runtime |
 
 ---
 
-## 14. Success Metrics
+## 9. Risk Assessment
+
+| Risk | Likelihood | Impact | Mitigation |
+|------|-----------|--------|------------|
+| CodeMirror 6 performance with large files | Medium | High | Use uncontrolled mode, lazy extensions, virtualization in Phase 1+ |
+| Web Worker security bypass | Low | High | Strip importScripts/fetch, enforce timeout, output size limit |
+| IndexedDB storage limits | Low | Medium | Implement storage quota check, warn user, ZIP export as backup |
+| GitHub Pages SPA routing issues | Medium | Low | Hash routing in Phase 0, 404.html trick in Phase 1 |
+| Bundle size creep | Medium | Medium | Code splitting, lazy language loads, bundle analysis CI check |
+| Browser compatibility (Safari) | Medium | Low | Test early, polyfill as needed, progressive enhancement |
+
+---
+
+## 10. Success Metrics (Phase 0)
 
 | Metric | Target |
 |--------|--------|
-| First Contentful Paint (FCP) | < 1.0s |
-| Time to Interactive (TTI) | < 2.0s |
-| Largest Contentful Paint (LCP) | < 2.5s |
-| Cumulative Layout Shift (CLS) | < 0.1 |
-| Initial bundle transfer | < 500 KB |
+| Initial load time (3G) | < 3 seconds |
+| Initial load time (broadband) | < 1.5 seconds |
+| Bundle size (gzipped) | < 200KB |
+| First meaningful paint | < 2 seconds |
+| Code execution latency (simple script) | < 500ms |
 | Lighthouse Performance score | > 90 |
-| GitHub Stars (first 3 months) | 500+ |
-| Community contributions (first 3 months) | 20+ PRs |
+| Browser support | Chrome 90+, Firefox 90+, Safari 15+, Edge 90+ |
 
 ---
 
-## 15. References & Source Reports
+## 11. Research References
 
-- **Generic-Research-1-OGF.md** — Architecture, GitHub Pages constraints, Vite config, performance strategy
-- **Editor-Research-2-OGF.md** — CodeMirror 6 vs Monaco, language support, execution engines, formatting, linting, Emmet
-- **UIUX-Research-3-OGF.md** — Design identity, themes, responsive layout, tab system, project management, storage
+- [OGF-1] Generic-Research-1-OGF.md — Architecture, tech stack, persistence, deployment
+- [OGF-2] UI-UX-Research-2-OGF.md — UI/UX patterns, component architecture
+- [OGF-3] Code-Runner-Research-3-OGF.md — Code execution, language support, live preview

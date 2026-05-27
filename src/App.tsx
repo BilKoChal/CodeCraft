@@ -1,74 +1,195 @@
 /**
- * CodeCraft — Root Application Component
+ * CodeCraft — App Root Component
  *
- * Sets up routing with HashRouter (already in main.tsx).
- * Routes: / (editor), /settings, /projects
+ * This is the top-level component that renders the IDE workspace.
+ * Phase 0 renders a minimal layout with placeholder sections
+ * that will be filled in by subsequent tasks.
  */
-import { Routes, Route } from 'react-router-dom';
 
-function EditorPage() {
+import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
+import { useUIStore } from './stores/uiStore';
+
+function App() {
+  const sidebarOpen = useUIStore((s) => s.sidebarOpen);
+  const bottomPanelOpen = useUIStore((s) => s.bottomPanelOpen);
+
   return (
-    <div className="editor-layout grid grid-rows-[auto_auto_1fr_auto] grid-areas-[titlebar_tabbar_editor_infostrip] h-full bg-surface-base text-text-primary">
-      {/* PH1-08: TitleBar component placeholder */}
-      <header className="grid-area-[titlebar] h-10 flex items-center px-4 border-b border-border-subtle">
-        <span className="text-accent-primary font-bold text-sm">CodeCraft</span>
-        <span className="text-text-secondary text-xs ml-4">Project Name</span>
+    <div className="app-root" style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
+      {/* Title Bar */}
+      <header
+        className="titlebar"
+        style={{
+          height: 'var(--titlebar-height)',
+          background: 'var(--bg-titlebar)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '0 12px',
+          borderBottom: '1px solid var(--border-default)',
+          flexShrink: 0,
+          userSelect: 'none',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ color: 'var(--accent-blue)', fontWeight: 700, fontSize: 14 }}>
+            ⌘ CodeCraft
+          </span>
+          <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>v0.1.0</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ color: 'var(--text-muted)', fontSize: 11 }}>
+            Phase 0 Scaffold
+          </span>
+        </div>
       </header>
 
-      {/* PH1-04: TabBar component placeholder */}
-      <div className="grid-area-[tabbar] h-9 flex items-center px-2 border-b border-border-subtle">
-        <span className="text-text-tertiary text-xs">No files open</span>
-      </div>
+      {/* Main Workspace */}
+      <PanelGroup direction="horizontal" autoSaveId="codecraft-main">
+        {/* Sidebar (File Tree) */}
+        {sidebarOpen && (
+          <>
+            <Panel
+              defaultSize={20}
+              minSize={15}
+              maxSize={35}
+              collapsible
+              order={1}
+            >
+              <div
+                style={{
+                  height: '100%',
+                  background: 'var(--bg-sidebar)',
+                  padding: 8,
+                  color: 'var(--text-secondary)',
+                  fontSize: 12,
+                  overflow: 'auto',
+                }}
+              >
+                <div style={{ marginBottom: 8, fontWeight: 600, color: 'var(--text-primary)' }}>
+                  EXPLORER
+                </div>
+                <div style={{ color: 'var(--text-muted)' }}>
+                  File tree will appear here (TASK-07)
+                </div>
+              </div>
+            </Panel>
+            <PanelResizeHandle
+              style={{
+                width: 'var(--resize-handle-size)',
+                background: 'var(--border-default)',
+                transition: 'background var(--transition-fast)',
+              }}
+            />
+          </>
+        )}
 
-      {/* PH1-02: EditorArea component placeholder */}
-      <main className="grid-area-[editor] flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-text-secondary text-lg mb-2">CodeCraft</h2>
-          <p className="text-text-tertiary text-sm">
-            Open a file or create a new project to get started
-          </p>
-        </div>
-      </main>
+        {/* Editor + Bottom Panel */}
+        <Panel defaultSize={80} minSize={40} order={2}>
+          <PanelGroup direction="vertical" autoSaveId="codecraft-editor">
+            {/* Tab Bar + Editor */}
+            <Panel defaultSize={70} minSize={30} order={1}>
+              <div
+                style={{
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  background: 'var(--bg-editor)',
+                }}
+              >
+                {/* Tab Bar Placeholder */}
+                <div
+                  style={{
+                    height: 'var(--tab-height)',
+                    background: 'var(--bg-tab-inactive)',
+                    borderBottom: '1px solid var(--border-default)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '0 8px',
+                    color: 'var(--text-muted)',
+                    fontSize: 12,
+                    flexShrink: 0,
+                  }}
+                >
+                  Tab bar will appear here (TASK-05)
+                </div>
+                {/* Editor Placeholder */}
+                <div
+                  style={{
+                    flex: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'var(--text-muted)',
+                    fontSize: 14,
+                  }}
+                >
+                  CodeMirror 6 editor will appear here (TASK-04)
+                </div>
+              </div>
+            </Panel>
 
-      {/* PH1-09: InfoStrip component placeholder */}
-      <footer className="grid-area-[infostrip] h-7 flex items-center px-4 text-xs text-text-tertiary border-t border-border-subtle">
+            {/* Bottom Panel (Console / Preview) */}
+            {bottomPanelOpen && (
+              <>
+                <PanelResizeHandle
+                  style={{
+                    height: 'var(--resize-handle-size)',
+                    background: 'var(--border-default)',
+                    transition: 'background var(--transition-fast)',
+                  }}
+                />
+                <Panel
+                  defaultSize={30}
+                  minSize={15}
+                  maxSize={60}
+                  collapsible
+                  order={2}
+                >
+                  <div
+                    style={{
+                      height: '100%',
+                      background: 'var(--bg-panel)',
+                      padding: 8,
+                      color: 'var(--text-secondary)',
+                      fontSize: 12,
+                      overflow: 'auto',
+                    }}
+                  >
+                    <div style={{ marginBottom: 8, fontWeight: 600, color: 'var(--text-primary)' }}>
+                      CONSOLE
+                    </div>
+                    <div style={{ color: 'var(--text-muted)' }}>
+                      Console output will appear here (TASK-12)
+                    </div>
+                  </div>
+                </Panel>
+              </>
+            )}
+          </PanelGroup>
+        </Panel>
+      </PanelGroup>
+
+      {/* Status Bar */}
+      <footer
+        style={{
+          height: 'var(--statusbar-height)',
+          background: 'var(--bg-statusbar)',
+          borderTop: '1px solid var(--border-default)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '0 12px',
+          color: 'var(--text-muted)',
+          fontSize: 11,
+          flexShrink: 0,
+          userSelect: 'none',
+        }}
+      >
         <span>Ln 1, Col 1</span>
-        <span className="mx-3">UTF-8</span>
-        <span>Plain Text</span>
-        <span className="ml-auto">Spaces: 2</span>
+        <span>JavaScript</span>
       </footer>
     </div>
   );
 }
 
-function SettingsPage() {
-  return (
-    <div className="h-full bg-surface-base text-text-primary p-6">
-      <h1 className="text-xl font-bold mb-4">Settings</h1>
-      <p className="text-text-secondary">Settings panel — to be implemented in PH3-10</p>
-    </div>
-  );
-}
-
-function ProjectsPage() {
-  return (
-    <div className="h-full bg-surface-base text-text-primary p-6">
-      <h1 className="text-xl font-bold mb-4">Projects</h1>
-      <p className="text-text-secondary">Project manager — to be implemented in PH2-02</p>
-    </div>
-  );
-}
-
-/**
- * Root App component with route definitions.
- * Uses HashRouter (configured in main.tsx) for GitHub Pages compatibility.
- */
-export default function App() {
-  return (
-    <Routes>
-      <Route path="/" element={<EditorPage />} />
-      <Route path="/settings" element={<SettingsPage />} />
-      <Route path="/projects" element={<ProjectsPage />} />
-    </Routes>
-  );
-}
+export default App;

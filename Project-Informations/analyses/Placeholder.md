@@ -1,1 +1,1 @@
-<!-- Placeholder – to be replaced -->
+<!-- placeholder -->

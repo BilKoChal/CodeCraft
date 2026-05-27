@@ -1,6 +1,10 @@
 /**
- * CodeCraft — Store Barrel Export
+ * CodeCraft — Store Index
+ *
+ * Re-exports all Zustand stores for convenient imports.
  */
-export { useEditorStore } from './editorStore';
+
 export { useProjectStore } from './projectStore';
-export { useSettingsStore } from './settingsStore';
+export { useEditorStore } from './editorStore';
+export { useUIStore } from './uiStore';
+export { useConsoleStore } from './consoleStore';
