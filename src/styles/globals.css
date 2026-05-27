@@ -1108,3 +1108,397 @@ body {
   border-style: dashed;
   border-color: var(--accent-blue);
 }
+
+/* ============================================================
+   Console Output Panel
+   TASK-12: Console output panel component
+   ============================================================ */
+
+.console-output {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-panel);
+  overflow: hidden;
+}
+
+/* ─── Console Header ────────────────────────────────────── */
+.console-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--border-default);
+  background: var(--bg-sidebar);
+  flex-shrink: 0;
+  min-height: 28px;
+}
+
+.console-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.console-header-right {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.console-header-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.console-header-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+/* ─── Status Indicator ──────────────────────────────────── */
+.console-status {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.console-status-idle {
+  color: var(--accent-green);
+}
+
+.console-status-running {
+  color: var(--accent-blue);
+}
+
+.console-status-error {
+  color: var(--accent-red);
+}
+
+.console-status-timeout {
+  color: var(--accent-yellow);
+}
+
+/* Spinning animation for running indicator */
+@keyframes console-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.console-spin-icon {
+  animation: console-spin 1s linear infinite;
+}
+
+.console-entry-count {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.console-duration {
+  font-size: 10px;
+  color: var(--text-muted);
+  padding: 1px 5px;
+  background: rgba(137, 180, 250, 0.08);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+}
+
+/* ─── Filter Bar ────────────────────────────────────────── */
+.console-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px 8px;
+  border-bottom: 1px solid var(--border-default);
+  background: var(--bg-sidebar);
+  flex-shrink: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.console-filter-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.console-filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+  white-space: nowrap;
+}
+
+.console-filter-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.console-filter-btn.active {
+  border-color: var(--accent-blue);
+  color: var(--text-primary);
+  background: rgba(137, 180, 250, 0.08);
+}
+
+.console-filter-count {
+  font-size: 10px;
+  background: rgba(137, 180, 250, 0.12);
+  padding: 0 4px;
+  border-radius: 8px;
+  min-width: 16px;
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* ─── Entry List ────────────────────────────────────────── */
+.console-entry-list {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.console-empty {
+  padding: 12px 16px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-family: var(--font-sans);
+}
+
+/* ─── Individual Console Entry ──────────────────────────── */
+.console-entry {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 2px 10px;
+  border-bottom: 1px solid rgba(49, 50, 68, 0.3);
+  transition: background var(--transition-fast);
+}
+
+.console-entry:hover {
+  background: rgba(137, 180, 250, 0.03);
+}
+
+/* Badge (method label) */
+.console-entry-badge {
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 1px 4px;
+  border-radius: 2px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  min-width: 36px;
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* Entry text */
+.console-entry-text {
+  flex: 1;
+  min-width: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--text-primary);
+}
+
+/* Timestamp */
+.console-entry-time {
+  font-size: 10px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  opacity: 0.5;
+  margin-top: 2px;
+}
+
+/* ─── Method-Specific Colors ────────────────────────────── */
+
+/* log — default (white-ish) */
+.console-entry-log .console-entry-badge {
+  background: rgba(205, 214, 244, 0.12);
+  color: var(--text-secondary);
+}
+
+.console-entry-log .console-entry-text {
+  color: var(--text-primary);
+}
+
+/* warn — yellow */
+.console-entry-warn .console-entry-badge {
+  background: rgba(249, 226, 175, 0.15);
+  color: var(--accent-yellow);
+}
+
+.console-entry-warn {
+  background: rgba(249, 226, 175, 0.04);
+}
+
+.console-entry-warn .console-entry-text {
+  color: var(--accent-yellow);
+}
+
+/* error — red */
+.console-entry-error .console-entry-badge {
+  background: rgba(243, 139, 168, 0.15);
+  color: var(--accent-red);
+}
+
+.console-entry-error {
+  background: rgba(243, 139, 168, 0.06);
+}
+
+.console-entry-error .console-entry-text {
+  color: var(--accent-red);
+}
+
+/* info — blue */
+.console-entry-info .console-entry-badge {
+  background: rgba(137, 180, 250, 0.15);
+  color: var(--accent-blue);
+}
+
+.console-entry-info .console-entry-text {
+  color: var(--accent-sky);
+}
+
+/* debug — mauve/purple */
+.console-entry-debug .console-entry-badge {
+  background: rgba(203, 166, 247, 0.15);
+  color: var(--accent-mauve);
+}
+
+.console-entry-debug .console-entry-text {
+  color: var(--accent-mauve);
+}
+
+/* table — green */
+.console-entry-table .console-entry-badge {
+  background: rgba(166, 227, 161, 0.15);
+  color: var(--accent-green);
+}
+
+.console-entry-table .console-entry-text {
+  color: var(--accent-green);
+}
+
+/* dir — peach */
+.console-entry-dir .console-entry-badge {
+  background: rgba(250, 179, 135, 0.15);
+  color: var(--accent-peach);
+}
+
+.console-entry-dir .console-entry-text {
+  color: var(--accent-peach);
+}
+
+/* result — subtle (return value) */
+.console-entry-result .console-entry-badge {
+  background: rgba(137, 220, 235, 0.15);
+  color: var(--accent-sky);
+}
+
+.console-entry-result .console-entry-text {
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* clear — divider */
+.console-entry-clear-divider {
+  height: 1px;
+  margin: 4px 0;
+  background: var(--border-default);
+}
+
+.console-entry-clear {
+  display: none;
+}
+
+/* ─── Filter button method colors ───────────────────────── */
+.console-filter-btn.console-entry-warn { color: var(--accent-yellow); }
+.console-filter-btn.console-entry-warn.active { border-color: var(--accent-yellow); }
+.console-filter-btn.console-entry-error { color: var(--accent-red); }
+.console-filter-btn.console-entry-error.active { border-color: var(--accent-red); }
+.console-filter-btn.console-entry-info { color: var(--accent-blue); }
+.console-filter-btn.console-entry-info.active { border-color: var(--accent-blue); }
+.console-filter-btn.console-entry-debug { color: var(--accent-mauve); }
+.console-filter-btn.console-entry-debug.active { border-color: var(--accent-mauve); }
+.console-filter-btn.console-entry-table { color: var(--accent-green); }
+.console-filter-btn.console-entry-table.active { border-color: var(--accent-green); }
+.console-filter-btn.console-entry-dir { color: var(--accent-peach); }
+.console-filter-btn.console-entry-dir.active { border-color: var(--accent-peach); }
+.console-filter-btn.console-entry-result { color: var(--accent-sky); }
+.console-filter-btn.console-entry-result.active { border-color: var(--accent-sky); }
+
+/* ─── Scroll-to-Bottom Button ───────────────────────────── */
+.console-scroll-bottom-btn {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--border-default);
+  background: var(--bg-sidebar);
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: background var(--transition-fast), color var(--transition-fast);
+  z-index: 10;
+}
+
+.console-scroll-bottom-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+/* ─── Titlebar Run/Stop Button Overrides ────────────────── */
+.titlebar-run-btn:hover {
+  border-color: var(--accent-green) !important;
+  color: var(--accent-green) !important;
+}
+
+.titlebar-run-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.titlebar-run-btn:disabled:hover {
+  border-color: var(--border-default) !important;
+  color: var(--text-muted) !important;
+  background: transparent !important;
+}
+
+.titlebar-stop-btn {
+  border-color: var(--accent-red) !important;
+  color: var(--accent-red) !important;
+}
+
+.titlebar-stop-btn:hover {
+  background: rgba(243, 139, 168, 0.12) !important;
+}

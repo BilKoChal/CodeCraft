@@ -114,3 +114,44 @@ Stage Summary:
 - ZIP import creates projects from .zip files; ZIP export downloads project as .zip
 - No new dependencies added — uses existing fflate, dexie-react-hooks, lucide-react
 - Bundle size: ~163KB gzipped (within 170KB target)
+
+---
+Task ID: TASK-11 + TASK-12
+Agent: Main
+Task: JS code runner (Web Worker) (TASK-11) + Console output panel (TASK-12)
+
+Work Log:
+- Created src/runner/jsRunner.ts — full Web Worker sandbox with:
+  - Inline worker source as Blob URL (no separate .worker.js file needed)
+  - Mocked console object (log, warn, error, info, debug, table, dir, clear)
+  - Security: deletes importScripts, fetch, XMLHttpRequest inside worker
+  - Timeout protection (5s default, worker.terminate() on timeout)
+  - Output size limits: MAX_OUTPUT_CHARS (100K), MAX_ENTRIES (10K), MAX_ARG_LENGTH (10K)
+  - JSRunner class with execute/cancel/dispose lifecycle
+  - Singleton jsRunner instance exported for app-wide use
+  - Return value capture via 'result' method type
+- Created src/components/Console/ConsoleOutput.tsx — full console panel with:
+  - Color-coded entries by console method (log=white, warn=yellow, error=red, info=blue, debug=mauve, table=green, dir=peach, result=sky)
+  - Status indicator (idle/running/error/timeout) with animated spinner
+  - Execution duration display
+  - Entry count badge
+  - Filter bar with per-method counts and toggle buttons
+  - Auto-scroll with smart disable on manual scroll-up
+  - Scroll-to-bottom floating button
+  - Clear button + Ctrl+L keyboard shortcut
+  - Timestamp per entry
+- Created src/components/Console/index.ts — barrel exports
+- Updated src/App.tsx — integrated Run/Stop button in titlebar, ConsoleOutput in bottom panel, connected JSRunner to consoleStore
+- Updated src/styles/globals.css — added ~400 lines of console panel CSS with method-specific coloring, filter bar, status indicators, run/stop button styling
+- Fixed backtick-in-template-literal TypeScript error in jsRunner.ts
+- Fixed unused imports/variables in App.tsx (ExecutionStatus, useRef, activeFileLanguageRef, getProject)
+- Verified build: tsc -b passes, vite build succeeds, ~166KB gzipped
+
+Stage Summary:
+- M5 (Code Execution) milestone complete
+- JS code execution is fully sandboxed in Web Worker with security hardening
+- Console panel provides professional IDE-like output experience with ANSI-inspired coloring
+- Run/Stop button in titlebar toggles based on execution status
+- No new dependencies added — uses existing Web Worker API, Zustand stores, Lucide icons
+- Bundle size: ~166KB gzipped (within 170KB target)
+- All console method types from the type system are supported (log, warn, error, info, debug, table, dir, clear, result)
