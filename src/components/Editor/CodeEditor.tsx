@@ -11,15 +11,29 @@
  * - CM6's internal state management is highly optimized
  * - File switching is handled via EditorView.dispatch()
  *
+ * BUG-02 FIX: Language is now derived from file metadata instead of being
+ * hardcoded to 'javascript'. The editor fetches the file's language from
+ * IndexedDB when the active file changes, enabling proper syntax highlighting
+ * for TypeScript, HTML, CSS, JSON, and Markdown files.
+ *
+ * RS-#1 FIX: Replaced `getContent` function selector with a direct
+ * subscription to `fileContents[activeFileId]`. The old pattern returned
+ * a stable function reference that never triggered re-renders.
+ *
+ * RS-#8 FIX: Replaced `viewUpdate: any` with the proper `ViewUpdate` type
+ * from `@codemirror/view` for type safety on the CM6 update callback.
+ *
  * @see Project-Plan.md P0-01 — Code Editor (JS/JSX)
  * @see src/stores/editorStore.ts — Content + dirty tracking
  */
 
-import { useCallback, useRef, useEffect, useMemo } from 'react';
+import { useCallback, useRef, useEffect, useMemo, useState } from 'react';
 import CodeMirror, { type ReactCodeMirrorRef } from '@uiw/react-codemirror';
+import type { ViewUpdate } from '@codemirror/view';
 import { useEditorStore } from '../../stores/editorStore';
 import { useProjectStore } from '../../stores/projectStore';
 import { createExtensions } from './extensions';
+import { getFile } from '../../db';
 import type { LanguageId } from '../../types';
 
 // ─── Component ────────────────────────────────────────────────
@@ -28,15 +42,40 @@ export function CodeEditor() {
   const activeFileId = useProjectStore((s) => s.activeFileId);
   const updateContent = useEditorStore((s) => s.updateContent);
   const setCursorPosition = useEditorStore((s) => s.setCursorPosition);
-  const getContent = useEditorStore((s) => s.getContent);
+
+  // RS-#1 FIX: Subscribe to file content directly instead of using
+  // the `getContent` function selector that never triggered re-renders.
+  const activeFileContent = useEditorStore(
+    (s) => activeFileId ? s.fileContents[activeFileId] : undefined,
+  );
+
   const editorRef = useRef<ReactCodeMirrorRef>(null);
 
-  // Current file content (for initial render only)
-  const content = activeFileId ? getContent(activeFileId) ?? '' : '';
+  // Current file content for the CodeMirror value prop
+  const content = activeFileContent ?? '';
 
-  // TODO: Derive language from file metadata (TASK-08 will provide this)
-  // For now, default to JavaScript since Phase 0 is JS-only
-  const language: LanguageId = 'javascript';
+  // BUG-02 FIX: Derive language from file metadata instead of hardcoding
+  // to 'javascript'. This enables proper syntax highlighting for all
+  // supported file types (TypeScript, HTML, CSS, JSON, Markdown).
+  const [language, setLanguage] = useState<LanguageId>('javascript');
+
+  useEffect(() => {
+    if (!activeFileId) {
+      setLanguage('javascript');
+      return;
+    }
+
+    let cancelled = false;
+    getFile(activeFileId).then((file) => {
+      if (!cancelled && file) {
+        setLanguage(file.language);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeFileId]);
 
   // Build extensions (memoized by language)
   const extensions = useMemo(
@@ -55,8 +94,9 @@ export function CodeEditor() {
   );
 
   // ─── onUpdate: Track cursor position ─────────────────────
+  // RS-#8 FIX: Use proper ViewUpdate type instead of `any`
   const handleUpdate = useCallback(
-    (viewUpdate: any) => {
+    (viewUpdate: ViewUpdate) => {
       if (viewUpdate.selectionSet && activeFileId) {
         const pos = viewUpdate.state.selection.main.head;
         const line = viewUpdate.state.doc.lineAt(pos);
@@ -74,7 +114,7 @@ export function CodeEditor() {
       prevFileIdRef.current = activeFileId;
       const view = editorRef.current?.view;
       if (view && activeFileId) {
-        const newContent = getContent(activeFileId) ?? '';
+        const newContent = activeFileContent ?? '';
         const currentContent = view.state.doc.toString();
         if (newContent !== currentContent) {
           view.dispatch({
@@ -88,7 +128,7 @@ export function CodeEditor() {
         }
       }
     }
-  }, [activeFileId, getContent]);
+  }, [activeFileId, activeFileContent]);
 
   // ─── No file open: Show empty state ──────────────────────
   if (!activeFileId) {

@@ -4,4 +4,4 @@
  * @see Project-Plan.md TASK-14 — Status bar component
  */
 
-export { StatusBar, clearFileMetaCache } from './StatusBar';
+export { StatusBar } from './StatusBar';

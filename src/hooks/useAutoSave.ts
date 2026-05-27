@@ -5,12 +5,21 @@
  * to IndexedDB via Dexie.js with a configurable debounce delay.
  *
  * How it works:
- * 1. The hook subscribes to editorStore's dirtyFileIds set
+ * 1. The hook subscribes to editorStore's dirtyFileIds
  * 2. When dirty files are detected, a debounced timer starts
  * 3. After the debounce delay (default 1 second), each dirty file's
  *    content is read from editorStore and written to IndexedDB
  * 4. After successful save, the file is marked as clean in editorStore
  * 5. The cycle repeats whenever new dirty files appear
+ *
+ * BUG-01 FIX: Adapted all dirtyFileIds access from Set methods (.size,
+ * .has(), iteration) to Record<string, boolean> methods
+ * (Object.keys().length, !!record[id], Object.keys() iteration).
+ *
+ * BUG-14 + SEC-04 FIX: Added beforeunload handler that warns the user
+ * when they try to close the browser tab with unsaved changes. Also
+ * added a visibilitychange handler that attempts to flush dirty files
+ * when the tab becomes hidden (more reliable than unmount cleanup).
  *
  * Usage in App.tsx:
  *   function App() {
@@ -52,10 +61,13 @@ const DEFAULT_DEBOUNCE_MS = 1000;
  * - Debounces saves by 1 second (configurable in app settings)
  * - Batches multiple dirty files into a single save operation
  * - Handles errors gracefully (logs but doesn't crash)
+ * - Warns on tab close if unsaved changes exist (BUG-14/SEC-04)
+ * - Flushes dirty files when tab becomes hidden (SEC-04)
  * - Cleans up timers on unmount
  */
 export function useAutoSave(): void {
   // Access editor store state and actions
+  // BUG-01 FIX: dirtyFileIds is now Record<string, boolean>, not Set<string>
   const dirtyFileIds = useEditorStore((s) => s.dirtyFileIds);
   const fileContents = useEditorStore((s) => s.fileContents);
   const markSaved = useEditorStore((s) => s.markSaved);
@@ -74,9 +86,11 @@ export function useAutoSave(): void {
     if (isSavingRef.current) return;
 
     // Snapshot the current dirty file IDs
-    const dirtyIds = new Set(useEditorStore.getState().dirtyFileIds);
+    // BUG-01 FIX: Use Object.keys() instead of Set constructor
+    const currentDirty = useEditorStore.getState().dirtyFileIds;
+    const dirtyIds = Object.keys(currentDirty);
 
-    if (dirtyIds.size === 0) return;
+    if (dirtyIds.length === 0) return;
 
     isSavingRef.current = true;
 
@@ -142,8 +156,8 @@ export function useAutoSave(): void {
   // ─── Main Effect: Watch dirty files and schedule saves ──────
 
   useEffect(() => {
-    // If no dirty files, nothing to do
-    if (dirtyFileIds.size === 0) return;
+    // BUG-01 FIX: Use Object.keys().length instead of .size
+    if (Object.keys(dirtyFileIds).length === 0) return;
 
     // Clear any existing timer (debounce reset)
     if (timerRef.current !== null) {
@@ -173,21 +187,46 @@ export function useAutoSave(): void {
     };
   }, [dirtyFileIds, fileContents, flushDirtyFiles, getDebounceDelay]);
 
-  // ─── Cleanup Effect: Flush remaining dirty files on unmount ─
-
+  // ─── BUG-14 + SEC-04: beforeunload handler ──────────────────
+  // Warn the user when they try to close the tab with unsaved changes.
+  // This is the standard mechanism used by VS Code, Google Docs, etc.
   useEffect(() => {
-    return () => {
-      // When the component unmounts, flush any remaining dirty files
-      // This prevents data loss if the user closes the tab during a debounce
-      const dirtyIds = useEditorStore.getState().dirtyFileIds;
-      if (dirtyIds.size > 0) {
-        // Use synchronous-style flush — we can't await in cleanup
-        // but we can start the save operations
-        flushDirtyFiles();
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      const currentDirty = useEditorStore.getState().dirtyFileIds;
+      // BUG-01 FIX: Use Object.keys().length instead of .size
+      if (Object.keys(currentDirty).length > 0) {
+        // Standard way to trigger the browser's "unsaved changes" dialog
+        e.preventDefault();
+        // Required for legacy browsers (Chrome < 119, Firefox)
+        e.returnValue = '';
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, []);
+
+  // ─── SEC-04: visibilitychange handler ───────────────────────
+  // When the tab becomes hidden (user switches tabs, minimizes browser),
+  // attempt to flush any dirty files. This is more reliable than unmount
+  // cleanup because the browser actually waits for this event to complete.
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        const currentDirty = useEditorStore.getState().dirtyFileIds;
+        // BUG-01 FIX: Use Object.keys().length instead of .size
+        if (Object.keys(currentDirty).length > 0) {
+          // Best-effort save — may not complete if the browser is
+          // terminating the page, but IndexedDB writes started before
+          // "hidden" are generally completed by the browser.
+          flushDirtyFiles();
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [flushDirtyFiles]);
 }
 
 // ─── Manual Save Utility ──────────────────────────────────────
@@ -202,11 +241,14 @@ export function useAutoSave(): void {
 export async function saveAllDirtyFiles(): Promise<number> {
   const { dirtyFileIds, fileContents } = useEditorStore.getState();
 
-  if (dirtyFileIds.size === 0) return 0;
+  // BUG-01 FIX: Use Object.keys() instead of Set iteration
+  const dirtyKeys = Object.keys(dirtyFileIds);
+
+  if (dirtyKeys.length === 0) return 0;
 
   const updates: Array<{ id: string; content: string }> = [];
 
-  for (const fileId of dirtyFileIds) {
+  for (const fileId of dirtyKeys) {
     const content = fileContents[fileId];
     if (content !== undefined) {
       updates.push({ id: fileId, content });

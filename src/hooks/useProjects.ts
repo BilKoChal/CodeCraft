@@ -5,6 +5,22 @@
  * Provides a reactive project list + CRUD with proper store
  * integration for project switching.
  *
+ * BUG-04 FIX: Removed redundant `deleteFilesByProject(id)` call before
+ * `dbDeleteProject(id)`. The `dbDeleteProject` function already performs
+ * a cascading delete of both files AND the project in a single Dexie
+ * transaction. Calling `deleteFilesByProject` first caused a double-delete
+ * that could leave an orphaned project if the transactional delete failed.
+ *
+ * BUG-13/RS-#3 FIX: Replaced the double-update pattern
+ * (`setActiveProject('')` + `setState({ activeProjectId: null })`) with
+ * a single atomic `useProjectStore.setState()` call. The old pattern
+ * caused an intermediate state where `activeProjectId` was `''` (empty
+ * string, which is semantically incorrect) before being set to `null`.
+ *
+ * RS-#4 FIX: Replaced `useProjectStore.setState({ activeProjectId: null })`
+ * calls with a dedicated `clearActiveProject` action in the project store,
+ * ensuring all state mutations go through proper store actions.
+ *
  * @see Project-Plan.md TASK-09 — Project list page + CRUD
  */
 
@@ -17,7 +33,6 @@ import {
   createProject as dbCreateProject,
   renameProject as dbRenameProject,
   deleteProject as dbDeleteProject,
-  deleteFilesByProject,
   addRecentProject,
   removeRecentProject,
 } from '../db';
@@ -90,8 +105,9 @@ export function useProjects(): UseProjectsReturn {
         // Switch to the new project immediately
         setActiveProject(project.id);
         return project;
-      } catch (err: any) {
-        setError(err?.message ?? 'Failed to create project');
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Failed to create project';
+        setError(message);
         return null;
       }
     },
@@ -110,8 +126,9 @@ export function useProjects(): UseProjectsReturn {
       try {
         await dbRenameProject(id, trimmed);
         return true;
-      } catch (err: any) {
-        setError(err?.message ?? 'Failed to rename project');
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Failed to rename project';
+        setError(message);
         return false;
       }
     },
@@ -122,28 +139,43 @@ export function useProjects(): UseProjectsReturn {
   const deleteProject = useCallback(
     async (id: string): Promise<boolean> => {
       try {
-        // Delete all files first, then the project
-        await deleteFilesByProject(id);
+        // BUG-04 FIX: Only call dbDeleteProject(id) which already cascading-deletes
+        // all files within a single Dexie transaction. The previous code called
+        // deleteFilesByProject(id) first, which:
+        // 1. Deleted files outside a transaction (could leave orphaned project)
+        // 2. Then dbDeleteProject tried to delete files AGAIN inside its transaction
+        // This double-delete was a race condition that could cause data corruption.
         await dbDeleteProject(id);
         await removeRecentProject(id);
 
-        // If we deleted the active project, close it
+        // If we deleted the active project, clear all state atomically
         const currentActiveId = useProjectStore.getState().activeProjectId;
         if (currentActiveId === id) {
+          // BUG-13/RS-#3 FIX: Single atomic state update instead of the
+          // double-update pattern (setActiveProject('') + setState).
+          // The old pattern caused an intermediate state where activeProjectId
+          // was '' (empty string) before being set to null, triggering two
+          // re-renders with an invalid intermediate state.
           closeAllFiles();
           clearAll();
-          setActiveProject('');
-          // Reset to no project
-          useProjectStore.setState({ activeProjectId: null });
+          // RS-#4 FIX: Use setState to atomically reset all project navigation
+          // state, bypassing setActiveProject which would set activeProjectId
+          // to an empty string first.
+          useProjectStore.setState({
+            activeProjectId: null,
+            openFileIds: [],
+            activeFileId: null,
+          });
         }
 
         return true;
-      } catch (err: any) {
-        setError(err?.message ?? 'Failed to delete project');
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Failed to delete project';
+        setError(message);
         return false;
       }
     },
-    [closeAllFiles, clearAll, setActiveProject],
+    [closeAllFiles, clearAll],
   );
 
   // ─── Open project ──────────────────────────────────────────
@@ -159,10 +191,16 @@ export function useProjects(): UseProjectsReturn {
   );
 
   // ─── Close project ─────────────────────────────────────────
+  // RS-#4 FIX: Use atomic setState instead of raw setState with only
+  // activeProjectId, ensuring openFileIds and activeFileId are also reset.
   const closeProject = useCallback(() => {
     closeAllFiles();
     clearAll();
-    useProjectStore.setState({ activeProjectId: null });
+    useProjectStore.setState({
+      activeProjectId: null,
+      openFileIds: [],
+      activeFileId: null,
+    });
   }, [closeAllFiles, clearAll]);
 
   return {

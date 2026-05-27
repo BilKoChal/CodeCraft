@@ -48,7 +48,7 @@ if ('serviceWorker' in navigator) {
           // App is cached and ready for offline use.
           console.log('[PWA] App is ready for offline use.');
         },
-        onRegisteredSW(swUrl, registration) {
+        onRegisteredSW(_swUrl: string, registration: ServiceWorkerRegistration | undefined) {
           // Check for updates every hour in the background
           if (registration) {
             setInterval(() => {
@@ -56,7 +56,7 @@ if ('serviceWorker' in navigator) {
             }, 60 * 60 * 1000); // 1 hour
           }
         },
-        onRegisterError(error) {
+        onRegisterError(error: Error) {
           console.error('[PWA] Service worker registration error:', error);
         },
       });

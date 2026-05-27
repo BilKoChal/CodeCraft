@@ -11,17 +11,29 @@
  * Each item is a clickable button (for future Phase 1 interactivity
  * like opening settings or changing language/encoding).
  *
+ * RS-#1 FIX: Replaced `isDirty` and `dirtyCount` function selectors with
+ * inline reactive selectors subscribing to `dirtyFileIds` directly.
+ * The old pattern returned stable function references that never triggered
+ * re-renders when dirty state changed.
+ *
+ * RS-#7 FIX: Narrowed `cursorPositions` selector to only the active file's
+ * cursor, preventing re-renders when other files' cursors move.
+ *
+ * BUG-06 FIX: Replaced module-level `cachedFileMeta` with component state.
+ * The old cache never triggered re-renders and the `clearFileMetaCache()`
+ * function was never called anywhere.
+ *
  * Data sources:
  * - Cursor position → editorStore.cursorPositions[activeFileId]
- * - Dirty status    → editorStore.isDirty(activeFileId)
- * - Language        → File metadata from IndexedDB (via cache)
+ * - Dirty status    → editorStore.dirtyFileIds[activeFileId]
+ * - Language        → File metadata from IndexedDB (via useState + effect)
  * - Tab size        → editorStore / project settings
  * - Exec status     → consoleStore.status
  *
  * @see Project-Plan.md TASK-14 — Status bar component
  */
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Save,
   Circle,
@@ -35,53 +47,6 @@ import { useProjectStore } from '../../stores/projectStore';
 import { useConsoleStore } from '../../stores/consoleStore';
 import { getFile } from '../../db';
 import type { LanguageId } from '../../types';
-
-// ─── File Meta Cache ──────────────────────────────────────────
-
-/**
- * In-memory cache for active file metadata.
- * Avoids repeated IndexedDB reads on every cursor update.
- * Invalidated when the active file changes.
- */
-let cachedFileMeta: {
-  fileId: string;
-  name: string;
-  language: LanguageId;
-} | null = null;
-
-/**
- * Clear the file meta cache. Called when the active file changes.
- */
-export function clearFileMetaCache(): void {
-  cachedFileMeta = null;
-}
-
-/**
- * Get the cached file metadata, or fetch it from IndexedDB.
- * Returns a promise that resolves to the file metadata.
- */
-async function getFileMeta(fileId: string): Promise<{
-  name: string;
-  language: LanguageId;
-} | null> {
-  // Return cache hit
-  if (cachedFileMeta && cachedFileMeta.fileId === fileId) {
-    return { name: cachedFileMeta.name, language: cachedFileMeta.language };
-  }
-
-  // Fetch from IndexedDB
-  const file = await getFile(fileId);
-  if (!file) return null;
-
-  // Update cache
-  cachedFileMeta = {
-    fileId,
-    name: file.name,
-    language: file.language,
-  };
-
-  return { name: file.name, language: file.language };
-}
 
 // ─── Language Display Names ───────────────────────────────────
 
@@ -153,21 +118,31 @@ function ExecutionIndicator() {
 
 export function StatusBar() {
   const activeFileId = useProjectStore((s) => s.activeFileId);
-  const cursorPositions = useEditorStore((s) => s.cursorPositions);
-  const isDirty = useEditorStore((s) => s.isDirty);
-  const dirtyCount = useEditorStore((s) => s.dirtyCount);
 
-  // File metadata (language) — reactive via useState + effect
+  // RS-#7 FIX: Select only the active file's cursor instead of the entire
+  // cursorPositions object. This prevents re-renders when other files'
+  // cursors move.
+  const cursor = useEditorStore(
+    (s) => activeFileId
+      ? s.cursorPositions[activeFileId] ?? { line: 1, column: 1 }
+      : { line: 1, column: 1 },
+  );
+
+  // RS-#1 FIX: Subscribe to dirtyFileIds directly instead of isDirty function.
+  // The old `useEditorStore(s => s.isDirty)` returned a stable function ref.
+  const dirty = useEditorStore(
+    (s) => activeFileId ? !!s.dirtyFileIds[activeFileId] : false,
+  );
+
+  // RS-#1 FIX: Subscribe to dirtyFileIds directly instead of dirtyCount function.
+  const totalDirty = useEditorStore(
+    (s) => Object.keys(s.dirtyFileIds).length,
+  );
+
+  // BUG-06 FIX: Use component state instead of module-level cache.
+  // The old module-level cachedFileMeta never triggered re-renders and
+  // clearFileMetaCache() was never called.
   const [language, setLanguage] = useState<LanguageId>('javascript');
-
-  // Current cursor position for the active file
-  const cursor = activeFileId
-    ? cursorPositions[activeFileId] ?? { line: 1, column: 1 }
-    : { line: 1, column: 1 };
-
-  // Whether the active file has unsaved changes
-  const dirty = activeFileId ? isDirty(activeFileId) : false;
-  const totalDirty = dirtyCount();
 
   // ─── Load file metadata when active file changes ──────────
   useEffect(() => {
@@ -177,9 +152,9 @@ export function StatusBar() {
     }
 
     let cancelled = false;
-    getFileMeta(activeFileId).then((meta) => {
-      if (!cancelled && meta) {
-        setLanguage(meta.language);
+    getFile(activeFileId).then((file) => {
+      if (!cancelled && file) {
+        setLanguage(file.language);
       }
     });
 

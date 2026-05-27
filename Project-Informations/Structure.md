@@ -1,6 +1,6 @@
 # CodeCraft — Project Structure
 
-**Last Updated:** 2026-05-28 (after TASK-16 + TASK-17 + TASK-18)
+**Last Updated:** 2026-05-28 (after Bug & Bad Code Analysis)
 
 ---
 
@@ -28,7 +28,16 @@ Project-Informations/
 │   ├── TASK-11-12-Worklog-CodeRunner-Console-2026-05-28.md
 │   └── TASK-16-17-18-Worklog-PWA-Preview-Skeleton-2026-05-28.md
 ├── analyses/
-│   └── Placeholder.md
+│   └── Bug-BadCode-Analysis/
+│       ├── Analysis-Summary.md                          # Consolidated findings (27 unique issues)
+│       ├── Original-Reports/
+│       │   ├── Architecture-Logic-Analysis-1-OGF.md     # 15 issues — architecture, logic bugs, anti-patterns
+│       │   ├── Security-Data-Integrity-Analysis-2-OGF.md # 12 issues — XSS, sandbox, data loss, CSP
+│       │   └── React-State-Management-Analysis-3-OGF.md  # 18 issues — Zustand, re-renders, type safety
+│       └── Final-Reports/
+│           ├── Architecture-Logic-Analysis-1-FIN.md
+│           ├── Security-Data-Integrity-Analysis-2-FIN.md
+│           └── React-State-Management-Analysis-3-FIN.md
 ├── development/
 │   ├── TASK-01/ (OGF + FIN)
 │   ├── TASK-02/ (OGF + FIN)

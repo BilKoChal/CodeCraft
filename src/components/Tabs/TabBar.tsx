@@ -9,10 +9,20 @@
  * - Full keyboard navigation (ARIA tablist pattern)
  * - Auto-scroll active tab into view
  *
+ * RS-#1 FIX: Replaced `isDirty` function selector with inline reactive
+ * selector subscribing to `dirtyFileIds` directly. The old pattern
+ * `useEditorStore(s => s.isDirty)` returned a stable function reference
+ * that never triggered re-renders when dirty state changed.
+ *
+ * BUG-05 FIX: Replaced module-level `fileMetaCache` Map with React state
+ * so cache updates trigger re-renders. The old cache was populated
+ * asynchronously but never caused the component to re-render, leaving
+ * tabs showing "Loading..." indefinitely.
+ *
  * @see Project-Plan.md P0-03 — Multi-file Tabs
  */
 
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
 import { useProjectStore } from '../../stores/projectStore';
 import { useEditorStore } from '../../stores/editorStore';
@@ -157,40 +167,74 @@ function TabItem({
 /**
  * TabBar renders the horizontal strip of open file tabs.
  *
- * File name resolution: For Phase 0, we use a simple in-memory cache
- * since the full file tree isn't built yet. The cache is populated
- * from IndexedDB lookups when files are first opened.
+ * BUG-05 FIX: File metadata is now stored in React state instead of a
+ * module-level Map. This ensures cache updates trigger re-renders so
+ * tab labels appear immediately instead of showing "Loading..." forever.
+ * The cache is also properly invalidated when files are renamed (via
+ * the reactive useLiveQuery in FileTree) and cleared on project switch.
  */
-
-// Simple in-memory cache for file metadata (name, language)
-// This will be replaced by a proper hook in TASK-08
-const fileMetaCache = new Map<string, { name: string; language: LanguageId }>();
 
 export function TabBar() {
   const openFileIds = useProjectStore((s) => s.openFileIds);
   const activeFileId = useProjectStore((s) => s.activeFileId);
   const openFile = useProjectStore((s) => s.openFile);
   const closeFile = useProjectStore((s) => s.closeFile);
-  const isDirty = useEditorStore((s) => s.isDirty);
   const loadContent = useEditorStore((s) => s.loadContent);
+
+  // RS-#1 FIX: Subscribe to dirtyFileIds directly instead of isDirty function
+  const dirtyFileIds = useEditorStore((s) => s.dirtyFileIds);
+
+  // BUG-05 FIX: Use React state instead of module-level cache
+  const [fileMetas, setFileMetas] = useState<Map<string, { name: string; language: LanguageId }>>(new Map());
 
   // Populate file meta cache from IndexedDB for any uncached files
   useEffect(() => {
-    for (const fileId of openFileIds) {
-      if (!fileMetaCache.has(fileId)) {
-        getFile(fileId).then((file) => {
+    if (openFileIds.length === 0) return;
+
+    let cancelled = false;
+    const uncachedIds = openFileIds.filter((id) => !fileMetas.has(id));
+
+    if (uncachedIds.length === 0) return;
+
+    Promise.all(uncachedIds.map((id) => getFile(id))).then((files) => {
+      if (cancelled) return;
+
+      setFileMetas((prev) => {
+        const next = new Map(prev);
+        for (const file of files) {
           if (file) {
-            fileMetaCache.set(fileId, { name: file.name, language: file.language });
+            next.set(file.id, { name: file.name, language: file.language });
             // Also load the content into editorStore if not already there
-            const currentContent = useEditorStore.getState().getContent(fileId);
+            const currentContent = useEditorStore.getState().fileContents[file.id];
             if (currentContent === undefined) {
-              loadContent(fileId, file.content);
+              loadContent(file.id, file.content);
             }
           }
-        });
+        }
+        return next;
+      });
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [openFileIds, fileMetas, loadContent]);
+
+  // Clear stale entries when openFileIds shrinks (e.g., tab closed)
+  useEffect(() => {
+    setFileMetas((prev) => {
+      const openSet = new Set(openFileIds);
+      let changed = false;
+      const next = new Map(prev);
+      for (const key of next.keys()) {
+        if (!openSet.has(key)) {
+          next.delete(key);
+          changed = true;
+        }
       }
-    }
-  }, [openFileIds, loadContent]);
+      return changed ? next : prev;
+    });
+  }, [openFileIds]);
 
   // Empty state
   if (openFileIds.length === 0) {
@@ -209,7 +253,7 @@ export function TabBar() {
       aria-orientation="horizontal"
     >
       {openFileIds.map((fileId) => {
-        const meta = fileMetaCache.get(fileId);
+        const meta = fileMetas.get(fileId);
         const fileName = meta?.name ?? 'Loading...';
         return (
           <TabItem
@@ -217,7 +261,7 @@ export function TabBar() {
             fileId={fileId}
             fileName={fileName}
             isActive={fileId === activeFileId}
-            isDirty={isDirty(fileId)}
+            isDirty={!!dirtyFileIds[fileId]}
             onClose={closeFile}
             onActivate={openFile}
             openFileIds={openFileIds}

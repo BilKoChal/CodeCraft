@@ -1,6 +1,6 @@
 # CodeCraft — Project Structure (Root)
 
-**Last Updated:** 2026-05-28 (after TASK-16 + TASK-17 + TASK-18)
+**Last Updated:** 2026-05-28 (after SEC-01 + BUG-01 + BUG-02 + BUG-04 + BUG-14 security & bug fixes)
 
 ---
 
@@ -42,7 +42,7 @@ codecraft/                                   # Project root
 │   │   │   ├── extensions.ts               # Extension composition (basicSetup replacement)
 │   │   │   └── index.ts                     # Barrel exports
 │   │   ├── Tabs/                            # ✅ Tab bar
-│   │   │   ├── TabBar.tsx                   # Tab bar with scroll, keyboard nav, file meta cache
+│   │   │   ├── TabBar.tsx                   # Tab bar with scroll, keyboard nav (BUG-05: React state cache)
 │   │   │   ├── FileIcon.tsx                 # File type icon mapping (Lucide + Catppuccin colors)
 │   │   │   └── index.ts                     # Barrel exports
 │   │   ├── Sidebar/                         # ✅ File tree sidebar (TASK-07 + TASK-08)
@@ -54,24 +54,24 @@ codecraft/                                   # Project root
 │   │   │   └── index.ts                     # Barrel exports
 │   │   ├── Layout/                          # (placeholder)
 │   │   ├── Modals/                          # (placeholder)
-│   │   ├── StatusBar/                       # ✅ Status bar (TASK-14)
-│   │   │   ├── StatusBar.tsx               # Dynamic status bar (cursor, language, save status, exec indicator)
+│   │   ├── StatusBar/                       # ✅ Status bar (TASK-14, BUG-06/RS-#7 fix)
+│   │   │   ├── StatusBar.tsx               # Dynamic status bar (narrow selectors, reactive language)
 │   │   │   └── index.ts                     # Barrel exports
 │   │   ├── Console/                         # ✅ Console output (TASK-12)
-│   │   ├── Preview/                         # ✅ Live preview (TASK-17)
-│   │   │   ├── PreviewFrame.tsx             # Sandboxed iframe preview with tab switching
+│   │   ├── Preview/                         # ✅ Live preview (TASK-17, SEC-01/SEC-05 fix)
+│   │   │   ├── PreviewFrame.tsx             # Sandboxed iframe preview (data: URL, script escape)
 │   │   │   └── index.ts                     # Barrel exports
 │   │   └── Skeleton/                        # ✅ Skeleton loading (TASK-18)
 │   │       ├── IDESkeleton.tsx              # Shimmer skeleton mimicking IDE layout
 │   │       └── index.ts                     # Barrel exports
 │   ├── hooks/                               # ✅ Custom React hooks
-│   │   ├── useAutoSave.ts                   # Auto-save with 1s debounce → IndexedDB
+│   │   ├── useAutoSave.ts                   # Auto-save with debounce, beforeunload + visibilitychange (BUG-14/SEC-04)
 │   │   ├── useKeyboardShortcuts.ts          # Global IDE shortcuts (Ctrl+S/B/J/W/Enter, TASK-15)
-│   │   └── useProjects.ts                   # Reactive project list + CRUD + project switching
+│   │   └── useProjects.ts                   # Project CRUD (BUG-04: single transactional delete)
 │   ├── runner/                              # ✅ Code execution engine
 │   │   └── jsRunner.ts                      # Web Worker sandbox for JS execution (TASK-11)
 │   ├── stores/                              # ✅ Zustand state stores
-│   │   ├── index.ts, projectStore.ts, editorStore.ts, uiStore.ts, consoleStore.ts
+│   │   ├── index.ts, projectStore.ts, editorStore.ts (BUG-01: Record<string,boolean>), uiStore.ts, consoleStore.ts
 │   ├── db/                                  # ✅ Dexie.js database
 │   │   ├── index.ts, database.ts
 │   │   └── queries/ (projects.ts, files.ts, settings.ts)
@@ -83,9 +83,9 @@ codecraft/                                   # Project root
 │   ├── styles/                              # ✅ CSS styles (enhanced)
 │   │   ├── globals.css                      # Theme variables + global reset + tab bar + resize + status bar + file tree + context menu + project list + titlebar + console
 │   │   └── editor.css                       # CodeMirror 6 overrides
-│   ├── App.tsx                              # ✅ Root component: ProjectList ↔ IDEWorkspace routing
+│   ├── App.tsx                              # ✅ Root component (RS-#1/#4: reactive selectors + atomic setState)
 │   ├── main.tsx                             # ✅ React entry point
-│   └── vite-env.d.ts                        # ✅ Vite type declarations
+│   └── vite-env.d.ts                        # ✅ Vite + PWA virtual module type declarations
 ├── public/                                  # ✅ Static assets
 ├── package.json, vite.config.ts, tsconfig*.json, index.html, .gitignore
 └── node_modules/
@@ -95,7 +95,7 @@ codecraft/                                   # Project root
 
 | Phase | Status | Key Deliverables |
 |-------|--------|-----------------|
-| **Phase 0** | 🟡 In Progress (M6 complete, M7 pending) | TASK-01 ✅ through TASK-18 ✅ |
+| **Phase 0** | 🟡 In Progress (M6 complete, security fixes applied, M7 pending) | TASK-01 ✅ through TASK-18 ✅, SEC-01 ✅, BUG-01 ✅, BUG-02 ✅, BUG-04 ✅, BUG-14 ✅ |
 | **Phase 1** | ⚪ Not Started | Multi-language, nested folders, theme switcher |
 | **Phase 2** | ⚪ Not Started | Terminal, drag-and-drop, C/Lua/Ruby support |
 | **Phase 3** | ⚪ Not Started | C++/Java/PHP, HMR, collaboration |

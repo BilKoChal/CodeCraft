@@ -23,7 +23,7 @@
  * @see Project-Plan.md TASK-15 — Keyboard shortcuts
  */
 
-import { useEffect, useCallback } from 'react';
+import { useEffect } from 'react';
 import { useProjectStore } from '../stores/projectStore';
 import { useEditorStore } from '../stores/editorStore';
 import { useUIStore } from '../stores/uiStore';
@@ -132,7 +132,8 @@ export function useKeyboardShortcuts(): void {
         const { activeFileId } = useProjectStore.getState();
         if (!activeFileId) return;
 
-        const { getContent } = useEditorStore.getState();
+        // RS-#1 FIX: Access fileContents directly instead of getContent function
+        const { fileContents } = useEditorStore.getState();
         const consoleStore = useConsoleStore.getState();
 
         // Check if already running
@@ -150,7 +151,7 @@ export function useKeyboardShortcuts(): void {
             return;
           }
 
-          const code = getContent(activeFileId) ?? '';
+          const code = fileContents[activeFileId] ?? '';
           if (!code.trim()) {
             consoleStore.addEntry('warn', ['No code to execute.']);
             return;

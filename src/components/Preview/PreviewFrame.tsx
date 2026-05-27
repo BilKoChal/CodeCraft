@@ -10,6 +10,22 @@
  * - NEVER allows same-origin (prevents access to parent IndexedDB)
  * - Allows scripts for JS execution, but no popups/modals/forms
  *
+ * SEC-01 FIX: "Open in New Tab" now uses a data: URL instead of a Blob URL.
+ * Blob URLs inherit the creating page's origin, giving user code full
+ * same-origin access to IndexedDB, localStorage, etc. Data URLs have an
+ * opaque/null origin, so user code in the new tab cannot access app data.
+ *
+ * SEC-05 FIX: User JS content embedded in inline <script> tags is now
+ * escaped to prevent </script> injection that could break out of the
+ * script context and execute arbitrary HTML.
+ *
+ * RS-#1 / BUG-10 FIX: Replaced `getContent` function selector with a
+ * direct subscription to `fileContents[activeFileId]`. The old pattern
+ * `useEditorStore(s => s.getContent)` returned a stable function reference
+ * that never triggered re-renders, making live preview non-reactive.
+ * The function call in the dependency array has also been replaced with
+ * the properly subscribed state value.
+ *
  * How it works:
  * 1. Detects if the active file is HTML (or if the project has an index.html)
  * 2. Builds an srcdoc HTML string from the file content
@@ -26,7 +42,6 @@ import { useProjectStore } from '../../stores/projectStore';
 import { useEditorStore } from '../../stores/editorStore';
 import { useUIStore } from '../../stores/uiStore';
 import { getFile, getFilesByProject } from '../../db';
-import { detectLanguage } from '../../utils/languageDetection';
 import type { LanguageId, FileEntry } from '../../types';
 
 // ─── Configuration ──────────────────────────────────────────────
@@ -86,6 +101,11 @@ function buildPreviewHTML(
 
   // ─── If active file is JavaScript, wrap in HTML with console capture ──
   if (activeFileLanguage === 'javascript' || activeFileLanguage === 'typescript') {
+    // SEC-05 FIX: Escape </script> in user JS to prevent breaking out of
+    // the inline script context. A user writing `</script><script>alert(1)</script>`
+    // would otherwise escape the script tag and execute arbitrary HTML.
+    const escapedContent = activeFileContent.replace(/<\/script>/gi, '<\\/script>');
+
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -116,8 +136,8 @@ function buildPreviewHTML(
         info: (...args) => args.forEach(a => appendLine(a)),
       };
       try {
-        const result = (function() { ${activeFileContent} })();
-        if (result !== undefined) appendLine('→ ' + JSON.stringify(result));
+        const result = (function() { ${escapedContent} })();
+        if (result !== undefined) appendLine('\\u2192 ' + JSON.stringify(result));
       } catch(e) {
         appendLine('Error: ' + e.message, 'preview-error');
       }
@@ -147,8 +167,15 @@ function buildPreviewHTML(
 export function PreviewFrame() {
   const activeProjectId = useProjectStore((s) => s.activeProjectId);
   const activeFileId = useProjectStore((s) => s.activeFileId);
-  const getContent = useEditorStore((s) => s.getContent);
   const activeBottomTab = useUIStore((s) => s.activeBottomTab);
+
+  // RS-#1 FIX: Subscribe to the active file's content directly instead of
+  // using the `getContent` function selector. The old pattern
+  // `useEditorStore(s => s.getContent)` returned a stable function ref
+  // that never triggered re-renders when content changed.
+  const activeFileContent = useEditorStore(
+    (s) => activeFileId ? s.fileContents[activeFileId] : undefined,
+  );
 
   const [srcdoc, setSrcdoc] = useState('');
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -163,7 +190,7 @@ export function PreviewFrame() {
     }
 
     // Get the active file content
-    const content = getContent(activeFileId) ?? '';
+    const content = activeFileContent ?? '';
     if (!content.trim()) {
       setSrcdoc('');
       return;
@@ -179,7 +206,7 @@ export function PreviewFrame() {
     // Build the preview HTML
     const html = buildPreviewHTML(files, content, language);
     setSrcdoc(html);
-  }, [activeProjectId, activeFileId, getContent]);
+  }, [activeProjectId, activeFileId, activeFileContent]);
 
   // ─── Debounced update ───────────────────────────────────────
   useEffect(() => {
@@ -198,7 +225,11 @@ export function PreviewFrame() {
         clearTimeout(debounceRef.current);
       }
     };
-  }, [activeFileId, activeBottomTab, updatePreview, getContent(activeFileId ?? '')]);
+  // BUG-10 FIX: Replaced `getContent(activeFileId ?? '')` function call in
+  // the dependency array with `activeFileContent`, which is a properly
+  // subscribed state value. Function calls in dependency arrays are
+  // non-standard and don't participate in React's reactivity system.
+  }, [activeFileId, activeBottomTab, updatePreview, activeFileContent]);
 
   // ─── Manual refresh ──────────────────────────────────────────
   const handleRefresh = useCallback(() => {
@@ -209,13 +240,14 @@ export function PreviewFrame() {
   }, [updatePreview]);
 
   // ─── Open in new tab ─────────────────────────────────────────
+  // SEC-01 FIX: Replaced Blob URL with data: URL. Blob URLs inherit the
+  // creating page's origin, allowing user code in the new tab to access
+  // IndexedDB, localStorage, and all app data (same-origin XSS). Data URLs
+  // have an opaque/null origin, so the new tab cannot access any app data.
   const handleOpenInNewTab = useCallback(() => {
     if (!srcdoc) return;
-    const blob = new Blob([srcdoc], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    window.open(url, '_blank');
-    // Revoke after a delay to allow the new tab to load
-    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    const dataUrl = `data:text/html;charset=utf-8,${encodeURIComponent(srcdoc)}`;
+    window.open(dataUrl, '_blank');
   }, [srcdoc]);
 
   // ─── Don't render if not the active tab ─────────────────────
@@ -244,7 +276,7 @@ export function PreviewFrame() {
           <button
             className="preview-toolbar-btn"
             onClick={handleOpenInNewTab}
-            title="Open in new tab"
+            title="Open in new tab (sandboxed — no access to app data)"
             aria-label="Open preview in new tab"
           >
             <ExternalLink size={12} />
@@ -257,7 +289,7 @@ export function PreviewFrame() {
         <iframe
           ref={iframeRef}
           className="preview-iframe"
-          srcdoc={srcdoc}
+          srcDoc={srcdoc}
           title="Live Preview"
           sandbox="allow-scripts"
         />

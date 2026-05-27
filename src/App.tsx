@@ -95,7 +95,10 @@ function IDEWorkspace() {
   const activeFileId = useProjectStore((s) => s.activeFileId);
   const closeAllFiles = useProjectStore((s) => s.closeAllFiles);
   const editorClearAll = useEditorStore((s) => s.clearAll);
-  const getContent = useEditorStore((s) => s.getContent);
+  // RS-#1 FIX: Subscribe to file content directly instead of getContent function
+  const activeFileContent = useEditorStore(
+    (s) => activeFileId ? s.fileContents[activeFileId] : undefined,
+  );
   const consoleStatus = useConsoleStore((s) => s.status);
   const startExecution = useConsoleStore((s) => s.startExecution);
   const addEntry = useConsoleStore((s) => s.addEntry);
@@ -115,10 +118,15 @@ function IDEWorkspace() {
     await exportProjectToZip(project.id, project.name);
   };
 
+  // RS-#4 FIX: Use atomic setState to reset all project navigation state
   const handleCloseProject = () => {
     closeAllFiles();
     editorClearAll();
-    useProjectStore.setState({ activeProjectId: null });
+    useProjectStore.setState({
+      activeProjectId: null,
+      openFileIds: [],
+      activeFileId: null,
+    });
   };
 
   // ─── Run Code (TASK-11) ──────────────────────────────────────
@@ -135,7 +143,8 @@ function IDEWorkspace() {
     }
 
     // Get the current editor content (may be dirty / unsaved)
-    const code = getContent(activeFileId) ?? '';
+    // RS-#1 FIX: Use activeFileContent from selector instead of getContent function
+    const code = activeFileContent ?? '';
     if (!code.trim()) {
       addEntry('warn', ['No code to execute.']);
       return;
@@ -170,7 +179,7 @@ function IDEWorkspace() {
         endExecution('timeout');
       },
     });
-  }, [activeFileId, getContent, startExecution, addEntry, endExecution, setBottomPanelOpen]);
+  }, [activeFileId, activeFileContent, startExecution, addEntry, endExecution, setBottomPanelOpen]);
 
   // ─── Stop Execution ──────────────────────────────────────────
   const handleStop = useCallback(() => {
