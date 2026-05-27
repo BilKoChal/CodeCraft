@@ -1,6 +1,6 @@
 # CodeCraft — Project Structure
 
-**Last Updated:** 2026-05-28 (after TASK-01 + TASK-02)
+**Last Updated:** 2026-05-28 (after TASK-03 + TASK-06)
 
 ---
 
@@ -20,7 +20,8 @@ Project-Informations/
 │       └── Code-Runner-Research-3-FIN.md    # Enriched with plan cross-references
 ├── worklogs/
 │   ├── 0-Worklog-2026-05-28.md             # Initial planning worklog
-│   └── TASK-01-02-Worklog-Scaffold-Stores-2026-05-28.md  # TASK-01 + TASK-02 worklog
+│   ├── TASK-01-02-Worklog-Scaffold-Stores-2026-05-28.md  # TASK-01 + TASK-02 worklog
+│   └── TASK-03-06-Worklog-Dexie-AutoSave-2026-05-28.md   # TASK-03 + TASK-06 worklog
 ├── analyses/
 │   └── Placeholder.md                       # Placeholder — delete when first analysis added
 ├── development/
@@ -29,11 +30,21 @@ Project-Informations/
 │   │   │   └── Scaffold-Implementation-1-OGF.md
 │   │   └── Final-Reports/
 │   │       └── Scaffold-Implementation-1-FIN.md
-│   └── TASK-02/
+│   ├── TASK-02/
+│   │   ├── Original-Reports/
+│   │   │   └── Stores-Implementation-2-OGF.md
+│   │   └── Final-Reports/
+│   │       └── Stores-Implementation-2-FIN.md
+│   ├── TASK-03/
+│   │   ├── Original-Reports/
+│   │   │   └── Dexie-Database-1-OGF.md
+│   │   └── Final-Reports/
+│   │       └── Dexie-Database-1-FIN.md
+│   └── TASK-06/
 │       ├── Original-Reports/
-│       │   └── Stores-Implementation-2-OGF.md
+│       │   └── Auto-Save-Hook-2-OGF.md
 │       └── Final-Reports/
-│           └── Stores-Implementation-2-FIN.md
+│           └── Auto-Save-Hook-2-FIN.md
 └── Structure.md                             # This file
 ```
 

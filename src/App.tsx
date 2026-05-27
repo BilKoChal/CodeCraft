@@ -8,8 +8,12 @@
 
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import { useUIStore } from './stores/uiStore';
+import { useAutoSave } from './hooks/useAutoSave';
 
 function App() {
+  // Activate auto-save for all open files (1s debounce → IndexedDB)
+  useAutoSave();
+
   const sidebarOpen = useUIStore((s) => s.sidebarOpen);
   const bottomPanelOpen = useUIStore((s) => s.bottomPanelOpen);
 
