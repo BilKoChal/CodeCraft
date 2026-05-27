@@ -492,3 +492,297 @@ body {
   background: var(--statusbar-item-hover);
   color: var(--text-secondary);
 }
+
+/* ============================================================
+   File Tree Sidebar Styles
+   TASK-07: File tree sidebar component
+   ============================================================ */
+
+.file-tree {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-sidebar);
+  overflow: hidden;
+  user-select: none;
+}
+
+/* ─── Header ────────────────────────────────────────────── */
+.file-tree-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px 6px;
+  flex-shrink: 0;
+}
+
+.file-tree-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.file-tree-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.file-tree-action-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.file-tree-action-btn:focus-visible {
+  outline: 1px solid var(--accent-blue);
+  outline-offset: -1px;
+}
+
+/* ─── Error Banner ─────────────────────────────────────── */
+.file-tree-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 8px 4px;
+  padding: 4px 8px;
+  background: rgba(243, 139, 168, 0.12);
+  border: 1px solid rgba(243, 139, 168, 0.25);
+  border-radius: var(--radius-sm);
+  color: var(--accent-red);
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.file-tree-error-dismiss {
+  background: none;
+  border: none;
+  color: var(--accent-red);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0 2px;
+  opacity: 0.7;
+  transition: opacity var(--transition-fast);
+}
+
+.file-tree-error-dismiss:hover {
+  opacity: 1;
+}
+
+/* ─── File List ────────────────────────────────────────── */
+.file-tree-list {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 4px 8px;
+}
+
+.file-tree-loading {
+  color: var(--text-muted);
+  font-size: 12px;
+  padding: 8px 12px;
+  text-align: center;
+}
+
+/* ─── File Item ────────────────────────────────────────── */
+.file-tree-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px 3px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text-secondary);
+  transition: background var(--transition-fast), color var(--transition-fast);
+  position: relative;
+  min-height: 26px;
+}
+
+.file-tree-item:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.file-tree-item.active {
+  background: var(--bg-selection);
+  color: var(--text-primary);
+}
+
+.file-tree-item:focus-visible {
+  outline: 1px solid var(--accent-blue);
+  outline-offset: -1px;
+}
+
+.file-tree-item-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+}
+
+.file-tree-item-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+/* Actions button (three dots) — visible on hover */
+.file-tree-item-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--transition-fast), background var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.file-tree-item:hover .file-tree-item-actions {
+  opacity: 1;
+}
+
+.file-tree-item-actions:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+/* ─── Empty State ──────────────────────────────────────── */
+.file-tree-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  color: var(--text-muted);
+  font-size: 12px;
+  text-align: center;
+  gap: 8px;
+}
+
+.file-tree-empty-hint {
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.file-tree-empty-action {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border: 1px solid var(--border-default);
+  background: transparent;
+  color: var(--text-accent);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 12px;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.file-tree-empty-action:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent-blue);
+}
+
+/* ─── Inline Rename Input ──────────────────────────────── */
+.file-tree-rename-input,
+.file-tree-new-file-input {
+  flex: 1;
+  min-width: 0;
+  background: var(--bg-editor);
+  border: 1px solid var(--accent-blue);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  padding: 1px 4px;
+  outline: none;
+}
+
+.file-tree-rename-input:focus,
+.file-tree-new-file-input:focus {
+  box-shadow: 0 0 0 1px var(--accent-blue);
+}
+
+.file-tree-item.renaming {
+  background: rgba(137, 180, 250, 0.06);
+}
+
+.file-tree-item.new-file-input {
+  background: rgba(137, 180, 250, 0.06);
+}
+
+/* ─── Context Menu ─────────────────────────────────────── */
+.file-tree-context-menu {
+  background: var(--bg-sidebar);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 4px 0;
+  min-width: 140px;
+  box-shadow: var(--shadow-lg);
+  z-index: 1000;
+}
+
+.context-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 12px;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  text-align: left;
+}
+
+.context-menu-item:hover {
+  background: var(--bg-hover);
+}
+
+.context-menu-item.danger {
+  color: var(--accent-red);
+}
+
+.context-menu-item.danger:hover {
+  background: rgba(243, 139, 168, 0.12);
+}
+
+/* ============================================================
+   Title Bar Styles
+   ============================================================ */
+
+.titlebar {
+  height: var(--titlebar-height);
+  background: var(--bg-titlebar);
+  border-bottom: 1px solid var(--border-default);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  flex-shrink: 0;
+  -webkit-app-region: drag;
+  user-select: none;
+}

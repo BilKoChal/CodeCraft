@@ -59,7 +59,6 @@ export function useAutoSave(): void {
   const dirtyFileIds = useEditorStore((s) => s.dirtyFileIds);
   const fileContents = useEditorStore((s) => s.fileContents);
   const markSaved = useEditorStore((s) => s.markSaved);
-  const clearAll = useEditorStore((s) => s.clearAll);
 
   // Refs for timer and state that shouldn't trigger re-renders
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);

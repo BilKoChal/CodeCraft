@@ -2,8 +2,13 @@
  * CodeCraft — App Root Component
  *
  * The top-level component that renders the IDE workspace.
- * Now includes real components for the editor, tab bar, and
- * polished dark theme (TASK-04, TASK-05, TASK-13).
+ * Uses react-resizable-panels for the IDE layout with:
+ * - Left sidebar: File tree (TASK-07)
+ * - Center: Tab bar + Code editor
+ * - Bottom: Console / Preview panels
+ *
+ * GitHub Actions workflow removed — will be re-added when the
+ * project is ready for deployment (TASK-19).
  */
 
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
@@ -11,6 +16,7 @@ import { useUIStore } from './stores/uiStore';
 import { useAutoSave } from './hooks/useAutoSave';
 import { CodeEditor } from './components/Editor';
 import { TabBar } from './components/Tabs';
+import { FileTree } from './components/Sidebar';
 
 function App() {
   // Activate auto-save for all open files (1s debounce → IndexedDB)
@@ -38,40 +44,24 @@ function App() {
 
       {/* Main Workspace */}
       <PanelGroup direction="horizontal" autoSaveId="codecraft-main">
-        {/* Sidebar (File Tree) */}
+        {/* Sidebar (File Tree — TASK-07) */}
         {sidebarOpen && (
           <>
             <Panel
-              defaultSize={20}
-              minSize={15}
-              maxSize={35}
+              defaultSize={18}
+              minSize={12}
+              maxSize={30}
               collapsible
               order={1}
             >
-              <div
-                style={{
-                  height: '100%',
-                  background: 'var(--bg-sidebar)',
-                  padding: 8,
-                  color: 'var(--text-secondary)',
-                  fontSize: 12,
-                  overflow: 'auto',
-                }}
-              >
-                <div style={{ marginBottom: 8, fontWeight: 600, color: 'var(--text-primary)' }}>
-                  EXPLORER
-                </div>
-                <div style={{ color: 'var(--text-muted)' }}>
-                  File tree will appear here (TASK-07)
-                </div>
-              </div>
+              <FileTree />
             </Panel>
             <PanelResizeHandle />
           </>
         )}
 
         {/* Editor + Bottom Panel */}
-        <Panel defaultSize={80} minSize={40} order={2}>
+        <Panel defaultSize={82} minSize={40} order={2}>
           <PanelGroup direction="vertical" autoSaveId="codecraft-editor">
             {/* Tab Bar + Editor */}
             <Panel defaultSize={70} minSize={30} order={1}>

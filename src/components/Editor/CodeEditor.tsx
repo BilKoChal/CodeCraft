@@ -29,8 +29,6 @@ export function CodeEditor() {
   const updateContent = useEditorStore((s) => s.updateContent);
   const setCursorPosition = useEditorStore((s) => s.setCursorPosition);
   const getContent = useEditorStore((s) => s.getContent);
-  const isDirty = useEditorStore((s) => s.isDirty);
-
   const editorRef = useRef<ReactCodeMirrorRef>(null);
 
   // Current file content (for initial render only)
@@ -112,7 +110,7 @@ export function CodeEditor() {
       onChange={handleChange}
       onUpdate={handleUpdate}
       onCreateEditor={(view) => {
-        editorRef.current = { view, state: view.state, editor: view.dom };
+        editorRef.current = { view, state: view.state, editor: view.dom as HTMLDivElement };
       }}
     />
   );

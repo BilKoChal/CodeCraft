@@ -1,6 +1,6 @@
 # CodeCraft — Project Structure (Root)
 
-**Last Updated:** 2026-05-28 (after TASK-04 + TASK-05 + TASK-13)
+**Last Updated:** 2026-05-28 (after TASK-07 + TASK-08)
 
 ---
 
@@ -21,6 +21,8 @@ codecraft/                                   # Project root
 │   │   ├── TASK-04/                         # ✅ CM6 editor component
 │   │   ├── TASK-05/                         # ✅ Tab bar component
 │   │   ├── TASK-06/                         # ✅ Auto-save hook
+│   │   ├── TASK-07/                         # ✅ File tree sidebar
+│   │   ├── TASK-08/                         # ✅ File CRUD operations (useFileTree hook)
 │   │   └── TASK-13/                         # ✅ Dark theme + CSS
 │   └── Structure.md
 ├── src/                                     # Application source code
@@ -34,7 +36,10 @@ codecraft/                                   # Project root
 │   │   │   ├── TabBar.tsx                   # Tab bar with scroll, keyboard nav, file meta cache
 │   │   │   ├── FileIcon.tsx                 # File type icon mapping (Lucide + Catppuccin colors)
 │   │   │   └── index.ts                     # Barrel exports
-│   │   ├── Sidebar/                         # (placeholder)
+│   │   ├── Sidebar/                         # ✅ File tree sidebar (TASK-07 + TASK-08)
+│   │   │   ├── FileTree.tsx                 # File tree with context menu, inline rename, new file
+│   │   │   ├── useFileTree.ts              # React hook: reactive file list + CRUD via Dexie useLiveQuery
+│   │   │   └── index.ts                     # Barrel exports
 │   │   ├── Layout/                          # (placeholder)
 │   │   ├── Modals/                          # (placeholder)
 │   │   ├── StatusBar/                       # (placeholder)
@@ -52,13 +57,12 @@ codecraft/                                   # Project root
 │   ├── types/                               # ✅ Shared TypeScript types
 │   │   └── index.ts
 │   ├── styles/                              # ✅ CSS styles (enhanced)
-│   │   ├── globals.css                      # Theme variables + global reset + tab bar + resize + status bar
+│   │   ├── globals.css                      # Theme variables + global reset + tab bar + resize + status bar + file tree + context menu
 │   │   └── editor.css                       # CodeMirror 6 overrides
-│   ├── App.tsx                              # ✅ Root component with TabBar + CodeEditor
+│   ├── App.tsx                              # ✅ Root component with FileTree + TabBar + CodeEditor
 │   ├── main.tsx                             # ✅ React entry point
 │   └── vite-env.d.ts                        # ✅ Vite type declarations
 ├── public/                                  # ✅ Static assets
-├── .github/workflows/deploy.yml             # ✅ GitHub Pages auto-deploy
 ├── package.json, vite.config.ts, tsconfig*.json, index.html, .gitignore
 └── node_modules/
 ```
@@ -67,7 +71,7 @@ codecraft/                                   # Project root
 
 | Phase | Status | Key Deliverables |
 |-------|--------|-----------------|
-| **Phase 0** | 🟡 In Progress (M2 partially done) | TASK-01 ✅, TASK-02 ✅, TASK-03 ✅, TASK-04 ✅, TASK-05 ✅, TASK-06 ✅, TASK-13 ✅ |
+| **Phase 0** | 🟡 In Progress (M3 complete) | TASK-01 ✅, TASK-02 ✅, TASK-03 ✅, TASK-04 ✅, TASK-05 ✅, TASK-06 ✅, TASK-07 ✅, TASK-08 ✅, TASK-13 ✅ |
 | **Phase 1** | ⚪ Not Started | Multi-language, nested folders, theme switcher |
 | **Phase 2** | ⚪ Not Started | Terminal, drag-and-drop, C/Lua/Ruby support |
 | **Phase 3** | ⚪ Not Started | C++/Java/PHP, HMR, collaboration |
@@ -82,8 +86,8 @@ codecraft/                                   # Project root
 | TASK-04 | ✅ Done | CodeMirror 6 editor component |
 | TASK-05 | ✅ Done | Tab bar component |
 | TASK-06 | ✅ Done | Auto-save hook |
-| TASK-07 | ⚪ Pending | File tree sidebar component |
-| TASK-08 | ⚪ Pending | File CRUD operations |
+| TASK-07 | ✅ Done | File tree sidebar component |
+| TASK-08 | ✅ Done | File CRUD operations (useFileTree hook) |
 | TASK-09 | ⚪ Pending | Project list page + CRUD |
 | TASK-10 | ⚪ Pending | ZIP import/export |
 | TASK-11 | ⚪ Pending | JS code runner |

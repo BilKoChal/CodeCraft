@@ -171,7 +171,6 @@ export function TabBar() {
   const activeFileId = useProjectStore((s) => s.activeFileId);
   const openFile = useProjectStore((s) => s.openFile);
   const closeFile = useProjectStore((s) => s.closeFile);
-  const setActiveFile = useProjectStore((s) => s.setActiveFile);
   const isDirty = useEditorStore((s) => s.isDirty);
   const loadContent = useEditorStore((s) => s.loadContent);
 
