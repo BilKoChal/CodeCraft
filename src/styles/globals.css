@@ -786,3 +786,325 @@ body {
   -webkit-app-region: drag;
   user-select: none;
 }
+
+.titlebar-brand {
+  color: var(--accent-blue);
+  font-weight: 700;
+  font-size: 14px;
+  -webkit-app-region: no-drag;
+}
+
+.titlebar-brand:hover {
+  opacity: 0.8;
+}
+
+.titlebar-action-btn {
+  display: flex;
+  align-items: center;
+  padding: 4px 10px;
+  border: 1px solid var(--border-default);
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  -webkit-app-region: no-drag;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.titlebar-action-btn:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent-blue);
+  color: var(--text-primary);
+}
+
+/* ============================================================
+   Project List Landing Page
+   TASK-09: Project list page + CRUD
+   ============================================================ */
+
+.project-list-page {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-editor);
+  overflow-y: auto;
+}
+
+.project-list-header {
+  padding: 48px 32px 24px;
+  border-bottom: 1px solid var(--border-default);
+  background: var(--bg-activitybar);
+}
+
+.project-list-brand {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.project-list-logo {
+  font-size: 48px;
+  line-height: 1;
+  color: var(--accent-blue);
+}
+
+.project-list-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.project-list-subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* ─── Error Banner ─────────────────────────────────────── */
+.project-list-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 16px auto 0;
+  padding: 8px 12px;
+  max-width: 960px;
+  background: rgba(243, 139, 168, 0.12);
+  border: 1px solid rgba(243, 139, 168, 0.25);
+  border-radius: var(--radius-sm);
+  color: var(--accent-red);
+  font-size: 12px;
+}
+
+.project-list-error-dismiss {
+  background: none;
+  border: none;
+  color: var(--accent-red);
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  padding: 0 4px;
+  opacity: 0.7;
+}
+
+.project-list-error-dismiss:hover {
+  opacity: 1;
+}
+
+/* ─── Actions Bar ──────────────────────────────────────── */
+.project-list-actions {
+  display: flex;
+  gap: 8px;
+  padding: 20px 32px;
+  max-width: 960px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.project-list-action-primary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: var(--accent-blue);
+  color: var(--bg-editor);
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity var(--transition-fast);
+}
+
+.project-list-action-primary:hover {
+  opacity: 0.9;
+}
+
+.project-list-action-secondary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: transparent;
+  color: var(--text-accent);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.project-list-action-secondary:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent-blue);
+}
+
+/* ─── Empty State ──────────────────────────────────────── */
+.project-list-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 32px;
+  text-align: center;
+  gap: 12px;
+}
+
+.project-list-empty-icon {
+  font-size: 48px;
+  margin-bottom: 8px;
+}
+
+.project-list-empty h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.project-list-empty p {
+  font-size: 13px;
+  color: var(--text-muted);
+  max-width: 400px;
+}
+
+/* ─── Project Cards Grid ───────────────────────────────── */
+.project-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+  padding: 0 32px 32px;
+  max-width: 960px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ─── Project Card ─────────────────────────────────────── */
+.project-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-sidebar);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+  position: relative;
+}
+
+.project-card:hover {
+  border-color: var(--accent-blue);
+  background: rgba(137, 180, 250, 0.04);
+}
+
+.project-card:focus-visible {
+  outline: 1px solid var(--accent-blue);
+  outline-offset: 2px;
+}
+
+.project-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: rgba(137, 180, 250, 0.1);
+  color: var(--accent-blue);
+  flex-shrink: 0;
+}
+
+.project-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.project-card-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.project-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.project-card-stat {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.project-card-actions {
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.project-card:hover .project-card-actions {
+  opacity: 1;
+}
+
+.project-card-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.project-card-action-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.project-card-action-btn.danger:hover {
+  background: rgba(243, 139, 168, 0.12);
+  color: var(--accent-red);
+}
+
+/* ─── Inline Rename Input (Project Card) ───────────────── */
+.project-card-rename-input {
+  width: 100%;
+  background: var(--bg-editor);
+  border: 1px solid var(--accent-blue);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 2px 6px;
+  outline: none;
+}
+
+.project-card-rename-input:focus {
+  box-shadow: 0 0 0 1px var(--accent-blue);
+}
+
+.new-project-card {
+  border-style: dashed;
+  border-color: var(--accent-blue);
+}

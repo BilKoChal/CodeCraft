@@ -89,3 +89,28 @@ Stage Summary:
 - CRUD operations are coordinated with editor/project stores (create→open tab+load content, delete→close tab+unload content)
 - No new dependencies added — uses existing dexie-react-hooks and lucide-react
 - Build verified passing, bundle size well within 170KB target
+
+---
+Task ID: TASK-09 + TASK-10
+Agent: Main
+Task: Project list page + CRUD (TASK-09) + ZIP import/export (TASK-10)
+
+Work Log:
+- Fixed GitHub Pages deployment: set base: '/CodeCraft/' in vite.config.ts, updated PWA manifest scope/start_url/icons to use correct base
+- Created .github/workflows/deploy.yml using JamesIves/github-pages-deploy-action@v4, Node.js 22, deploys to gh-pages branch
+- Created src/hooks/useProjects.ts — reactive project list + CRUD hook with useLiveQuery, project switching, cascading delete
+- Created src/components/ProjectList/ProjectList.tsx — full landing page with project cards, create/rename/delete, ZIP import, empty state, keyboard nav
+- Created src/components/ProjectList/index.ts — barrel exports
+- Created src/utils/zipImport.ts — importProjectFromZip (fflate unzip → create project + files) and exportProjectToZip (read files → fflate zip → download)
+- Updated src/App.tsx — routing between ProjectList and IDEWorkspace, Export ZIP button in titlebar
+- Updated src/styles/globals.css — added ~200 lines of project list page CSS + titlebar action button styles
+- Verified build: tsc -b passes, vite build succeeds, ~163KB gzipped
+
+Stage Summary:
+- M4 (Project Management) milestone complete
+- Fixed GitHub Pages MIME type error by correcting base path from '/codecraft/' (conditional) to '/CodeCraft/' (static, matching repo name)
+- GitHub Actions workflow deploys to gh-pages branch on push to main
+- Project list page provides full CRUD: create, open, rename, delete projects
+- ZIP import creates projects from .zip files; ZIP export downloads project as .zip
+- No new dependencies added — uses existing fflate, dexie-react-hooks, lucide-react
+- Bundle size: ~163KB gzipped (within 170KB target)

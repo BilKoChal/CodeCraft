@@ -1,114 +1,110 @@
 /**
  * CodeCraft — App Root Component
  *
- * The top-level component that renders the IDE workspace.
- * Uses react-resizable-panels for the IDE layout with:
- * - Left sidebar: File tree (TASK-07)
- * - Center: Tab bar + Code editor
- * - Bottom: Console / Preview panels
+ * Top-level router that shows either:
+ * 1. Project List landing page (when no project is active)
+ * 2. IDE workspace (when a project is open)
  *
- * GitHub Actions workflow removed — will be re-added when the
- * project is ready for deployment (TASK-19).
+ * Uses Zustand's projectStore for "routing" — no React Router needed
+ * for Phase 0 (hash routing in Phase 1).
+ *
+ * @see Project-Plan.md TASK-09 — Project list page + CRUD
  */
 
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
+import { Download } from 'lucide-react';
+import { useProjectStore } from './stores/projectStore';
+import { useEditorStore } from './stores/editorStore';
 import { useUIStore } from './stores/uiStore';
 import { useAutoSave } from './hooks/useAutoSave';
 import { CodeEditor } from './components/Editor';
 import { TabBar } from './components/Tabs';
 import { FileTree } from './components/Sidebar';
+import { ProjectList } from './components/ProjectList';
+import { exportProjectToZip } from './utils/zipImport';
+import { getProject } from './db';
 
-function App() {
-  // Activate auto-save for all open files (1s debounce → IndexedDB)
+// ─── IDE Workspace ──────────────────────────────────────────
+
+function IDEWorkspace() {
   useAutoSave();
 
   const sidebarOpen = useUIStore((s) => s.sidebarOpen);
   const bottomPanelOpen = useUIStore((s) => s.bottomPanelOpen);
+  const activeProjectId = useProjectStore((s) => s.activeProjectId);
+  const closeAllFiles = useProjectStore((s) => s.closeAllFiles);
+  const editorClearAll = useEditorStore((s) => s.clearAll);
+
+  const handleExportZip = async () => {
+    if (!activeProjectId) return;
+    const project = await getProject(activeProjectId);
+    if (!project) return;
+    await exportProjectToZip(project.id, project.name);
+  };
+
+  const handleCloseProject = () => {
+    closeAllFiles();
+    editorClearAll();
+    useProjectStore.setState({ activeProjectId: null });
+  };
 
   return (
     <div className="app-root" style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
       {/* Title Bar */}
       <header className="titlebar">
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ color: 'var(--accent-blue)', fontWeight: 700, fontSize: 14 }}>
+          <span
+            className="titlebar-brand"
+            onClick={handleCloseProject}
+            title="Back to project list"
+            style={{ cursor: 'pointer' }}
+          >
             ⌘ CodeCraft
           </span>
           <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>v0.1.0</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ color: 'var(--text-muted)', fontSize: 11 }}>
-            Browser Code Editor
-          </span>
+          <button
+            className="titlebar-action-btn"
+            onClick={handleExportZip}
+            title="Export as ZIP"
+            aria-label="Export project as ZIP"
+          >
+            <Download size={14} />
+            <span style={{ fontSize: 11, marginLeft: 4 }}>Export ZIP</span>
+          </button>
         </div>
       </header>
 
       {/* Main Workspace */}
       <PanelGroup direction="horizontal" autoSaveId="codecraft-main">
-        {/* Sidebar (File Tree — TASK-07) */}
         {sidebarOpen && (
           <>
-            <Panel
-              defaultSize={18}
-              minSize={12}
-              maxSize={30}
-              collapsible
-              order={1}
-            >
+            <Panel defaultSize={18} minSize={12} maxSize={30} collapsible order={1}>
               <FileTree />
             </Panel>
             <PanelResizeHandle />
           </>
         )}
 
-        {/* Editor + Bottom Panel */}
         <Panel defaultSize={82} minSize={40} order={2}>
           <PanelGroup direction="vertical" autoSaveId="codecraft-editor">
-            {/* Tab Bar + Editor */}
             <Panel defaultSize={70} minSize={30} order={1}>
-              <div
-                style={{
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  background: 'var(--bg-editor)',
-                }}
-              >
-                {/* Tab Bar — TASK-05 */}
+              <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: 'var(--bg-editor)' }}>
                 <TabBar />
-                {/* Code Editor — TASK-04 */}
                 <div style={{ flex: 1, overflow: 'hidden' }}>
                   <CodeEditor />
                 </div>
               </div>
             </Panel>
 
-            {/* Bottom Panel (Console / Preview) */}
             {bottomPanelOpen && (
               <>
                 <PanelResizeHandle />
-                <Panel
-                  defaultSize={30}
-                  minSize={15}
-                  maxSize={60}
-                  collapsible
-                  order={2}
-                >
-                  <div
-                    style={{
-                      height: '100%',
-                      background: 'var(--bg-panel)',
-                      padding: 8,
-                      color: 'var(--text-secondary)',
-                      fontSize: 12,
-                      overflow: 'auto',
-                    }}
-                  >
-                    <div style={{ marginBottom: 8, fontWeight: 600, color: 'var(--text-primary)' }}>
-                      CONSOLE
-                    </div>
-                    <div style={{ color: 'var(--text-muted)' }}>
-                      Console output will appear here (TASK-12)
-                    </div>
+                <Panel defaultSize={30} minSize={15} maxSize={60} collapsible order={2}>
+                  <div style={{ height: '100%', background: 'var(--bg-panel)', padding: 8, color: 'var(--text-secondary)', fontSize: 12, overflow: 'auto' }}>
+                    <div style={{ marginBottom: 8, fontWeight: 600, color: 'var(--text-primary)' }}>CONSOLE</div>
+                    <div style={{ color: 'var(--text-muted)' }}>Console output will appear here (TASK-12)</div>
                   </div>
                 </Panel>
               </>
@@ -130,6 +126,20 @@ function App() {
       </footer>
     </div>
   );
+}
+
+// ─── App ────────────────────────────────────────────────────
+
+function App() {
+  const activeProjectId = useProjectStore((s) => s.activeProjectId);
+
+  // If no project is active, show the project list landing page
+  if (!activeProjectId) {
+    return <ProjectList />;
+  }
+
+  // Otherwise, show the IDE workspace
+  return <IDEWorkspace />;
 }
 
 export default App;

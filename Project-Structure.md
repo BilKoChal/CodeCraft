@@ -1,6 +1,6 @@
 # CodeCraft — Project Structure (Root)
 
-**Last Updated:** 2026-05-28 (after TASK-07 + TASK-08)
+**Last Updated:** 2026-05-28 (after TASK-09 + TASK-10)
 
 ---
 
@@ -23,6 +23,8 @@ codecraft/                                   # Project root
 │   │   ├── TASK-06/                         # ✅ Auto-save hook
 │   │   ├── TASK-07/                         # ✅ File tree sidebar
 │   │   ├── TASK-08/                         # ✅ File CRUD operations (useFileTree hook)
+│   │   ├── TASK-09/                         # ✅ Project list page + CRUD
+│   │   ├── TASK-10/                         # ✅ ZIP import/export (fflate)
 │   │   └── TASK-13/                         # ✅ Dark theme + CSS
 │   └── Structure.md
 ├── src/                                     # Application source code
@@ -40,26 +42,30 @@ codecraft/                                   # Project root
 │   │   │   ├── FileTree.tsx                 # File tree with context menu, inline rename, new file
 │   │   │   ├── useFileTree.ts              # React hook: reactive file list + CRUD via Dexie useLiveQuery
 │   │   │   └── index.ts                     # Barrel exports
+│   │   ├── ProjectList/                     # ✅ Project list landing page (TASK-09)
+│   │   │   ├── ProjectList.tsx              # Project cards, create/rename/delete, ZIP import
+│   │   │   └── index.ts                     # Barrel exports
 │   │   ├── Layout/                          # (placeholder)
 │   │   ├── Modals/                          # (placeholder)
 │   │   ├── StatusBar/                       # (placeholder)
 │   │   └── Console/                         # (placeholder)
 │   ├── hooks/                               # ✅ Custom React hooks
-│   │   └── useAutoSave.ts                   # Auto-save with 1s debounce → IndexedDB
+│   │   ├── useAutoSave.ts                   # Auto-save with 1s debounce → IndexedDB
+│   │   └── useProjects.ts                   # Reactive project list + CRUD + project switching
 │   ├── stores/                              # ✅ Zustand state stores
 │   │   ├── index.ts, projectStore.ts, editorStore.ts, uiStore.ts, consoleStore.ts
 │   ├── db/                                  # ✅ Dexie.js database
 │   │   ├── index.ts, database.ts
 │   │   └── queries/ (projects.ts, files.ts, settings.ts)
 │   ├── utils/                               # ✅ Utility functions
-│   │   ├── id.ts, languageDetection.ts, storage.ts
+│   │   ├── id.ts, languageDetection.ts, storage.ts, zipImport.ts
 │   ├── pages/                               # (placeholder)
 │   ├── types/                               # ✅ Shared TypeScript types
 │   │   └── index.ts
 │   ├── styles/                              # ✅ CSS styles (enhanced)
-│   │   ├── globals.css                      # Theme variables + global reset + tab bar + resize + status bar + file tree + context menu
+│   │   ├── globals.css                      # Theme variables + global reset + tab bar + resize + status bar + file tree + context menu + project list + titlebar
 │   │   └── editor.css                       # CodeMirror 6 overrides
-│   ├── App.tsx                              # ✅ Root component with FileTree + TabBar + CodeEditor
+│   ├── App.tsx                              # ✅ Root component: ProjectList ↔ IDEWorkspace routing
 │   ├── main.tsx                             # ✅ React entry point
 │   └── vite-env.d.ts                        # ✅ Vite type declarations
 ├── public/                                  # ✅ Static assets
@@ -71,7 +77,7 @@ codecraft/                                   # Project root
 
 | Phase | Status | Key Deliverables |
 |-------|--------|-----------------|
-| **Phase 0** | 🟡 In Progress (M3 complete) | TASK-01 ✅, TASK-02 ✅, TASK-03 ✅, TASK-04 ✅, TASK-05 ✅, TASK-06 ✅, TASK-07 ✅, TASK-08 ✅, TASK-13 ✅ |
+| **Phase 0** | 🟡 In Progress (M4 complete) | TASK-01 ✅, TASK-02 ✅, TASK-03 ✅, TASK-04 ✅, TASK-05 ✅, TASK-06 ✅, TASK-07 ✅, TASK-08 ✅, TASK-09 ✅, TASK-10 ✅, TASK-13 ✅ |
 | **Phase 1** | ⚪ Not Started | Multi-language, nested folders, theme switcher |
 | **Phase 2** | ⚪ Not Started | Terminal, drag-and-drop, C/Lua/Ruby support |
 | **Phase 3** | ⚪ Not Started | C++/Java/PHP, HMR, collaboration |
@@ -88,8 +94,8 @@ codecraft/                                   # Project root
 | TASK-06 | ✅ Done | Auto-save hook |
 | TASK-07 | ✅ Done | File tree sidebar component |
 | TASK-08 | ✅ Done | File CRUD operations (useFileTree hook) |
-| TASK-09 | ⚪ Pending | Project list page + CRUD |
-| TASK-10 | ⚪ Pending | ZIP import/export |
+| TASK-09 | ✅ Done | Project list page + CRUD |
+| TASK-10 | ✅ Done | ZIP import/export (fflate) |
 | TASK-11 | ⚪ Pending | JS code runner |
 | TASK-12 | ⚪ Pending | Console output panel |
 | TASK-13 | ✅ Done | Dark theme + CSS variables |
