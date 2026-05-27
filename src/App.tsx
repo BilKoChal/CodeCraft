@@ -3,21 +3,27 @@
  *
  * Top-level router that shows either:
  * 1. Project List landing page (when no project is active)
- * 2. IDE workspace (when a project is open)
+ * 2. IDE workspace (when a project is open) with skeleton loading
  *
  * Uses Zustand's projectStore for "routing" — no React Router needed
  * for Phase 0 (hash routing in Phase 1).
+ *
+ * The bottom panel now supports tab switching between Console and
+ * Live Preview (TASK-17). The active tab is tracked in uiStore.
  *
  * @see Project-Plan.md TASK-09 — Project list page + CRUD
  * @see Project-Plan.md TASK-11 — JS code runner (Web Worker)
  * @see Project-Plan.md TASK-12 — Console output panel
  * @see Project-Plan.md TASK-14 — Status bar component
  * @see Project-Plan.md TASK-15 — Keyboard shortcuts
+ * @see Project-Plan.md TASK-16 — PWA setup
+ * @see Project-Plan.md TASK-17 — Live preview (iframe + srcdoc)
+ * @see Project-Plan.md TASK-18 — Skeleton loading states
  */
 
-import { useCallback } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
-import { Download, Play, Square } from 'lucide-react';
+import { Download, Play, Square, Terminal, Eye } from 'lucide-react';
 import { useProjectStore } from './stores/projectStore';
 import { useEditorStore } from './stores/editorStore';
 import { useUIStore } from './stores/uiStore';
@@ -29,11 +35,43 @@ import { TabBar } from './components/Tabs';
 import { FileTree } from './components/Sidebar';
 import { ProjectList } from './components/ProjectList';
 import { ConsoleOutput } from './components/Console';
+import { PreviewFrame } from './components/Preview';
 import { StatusBar } from './components/StatusBar';
+import { IDESkeleton } from './components/Skeleton';
 import { jsRunner } from './runner/jsRunner';
 import { exportProjectToZip } from './utils/zipImport';
 import { getFile, getProject } from './db';
 import { isExecutable } from './utils/languageDetection';
+
+// ─── Bottom Panel Tab Buttons ─────────────────────────────────
+
+function BottomPanelTabs() {
+  const activeBottomTab = useUIStore((s) => s.activeBottomTab);
+  const setActiveBottomTab = useUIStore((s) => s.setActiveBottomTab);
+
+  return (
+    <div className="bottom-panel-tabs">
+      <button
+        className={`bottom-panel-tab ${activeBottomTab === 'console' ? 'active' : ''}`}
+        onClick={() => setActiveBottomTab('console')}
+        title="Console output"
+        aria-label="Switch to console"
+      >
+        <Terminal size={12} />
+        <span>Console</span>
+      </button>
+      <button
+        className={`bottom-panel-tab ${activeBottomTab === 'preview' ? 'active' : ''}`}
+        onClick={() => setActiveBottomTab('preview')}
+        title="Live preview"
+        aria-label="Switch to preview"
+      >
+        <Eye size={12} />
+        <span>Preview</span>
+      </button>
+    </div>
+  );
+}
 
 // ─── IDE Workspace ──────────────────────────────────────────
 
@@ -41,9 +79,18 @@ function IDEWorkspace() {
   useAutoSave();
   useKeyboardShortcuts(); // TASK-15: Global IDE shortcuts
 
+  // TASK-18: Skeleton loading — show skeleton for 600ms on first mount
+  const [showSkeleton, setShowSkeleton] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowSkeleton(false), 600);
+    return () => clearTimeout(timer);
+  }, []);
+
   const sidebarOpen = useUIStore((s) => s.sidebarOpen);
   const bottomPanelOpen = useUIStore((s) => s.bottomPanelOpen);
   const setBottomPanelOpen = useUIStore((s) => s.setBottomPanelOpen);
+  const activeBottomTab = useUIStore((s) => s.activeBottomTab);
   const activeProjectId = useProjectStore((s) => s.activeProjectId);
   const activeFileId = useProjectStore((s) => s.activeFileId);
   const closeAllFiles = useProjectStore((s) => s.closeAllFiles);
@@ -55,6 +102,11 @@ function IDEWorkspace() {
   const endExecution = useConsoleStore((s) => s.endExecution);
 
   const isRunning = consoleStatus === 'running';
+
+  // Show skeleton during initial load (TASK-18)
+  if (showSkeleton) {
+    return <IDESkeleton />;
+  }
 
   const handleExportZip = async () => {
     if (!activeProjectId) return;
@@ -89,8 +141,9 @@ function IDEWorkspace() {
       return;
     }
 
-    // Ensure the bottom panel is open
+    // Ensure the bottom panel is open and switched to console
     setBottomPanelOpen(true);
+    useUIStore.getState().setActiveBottomTab('console');
 
     // Start execution (clears previous output)
     startExecution();
@@ -203,7 +256,15 @@ function IDEWorkspace() {
               <>
                 <PanelResizeHandle />
                 <Panel defaultSize={30} minSize={15} maxSize={60} collapsible order={2}>
-                  <ConsoleOutput />
+                  <div className="bottom-panel">
+                    {/* Bottom Panel Tab Bar (TASK-17) */}
+                    <BottomPanelTabs />
+                    {/* Tab Content */}
+                    <div className="bottom-panel-content">
+                      {activeBottomTab === 'console' && <ConsoleOutput />}
+                      {activeBottomTab === 'preview' && <PreviewFrame />}
+                    </div>
+                  </div>
                 </Panel>
               </>
             )}

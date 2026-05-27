@@ -1529,3 +1529,362 @@ body {
 .titlebar-stop-btn:hover {
   background: rgba(243, 139, 168, 0.12) !important;
 }
+
+/* ============================================================
+   Bottom Panel (Console + Preview tabs)
+   TASK-17: Live preview integration
+   ============================================================ */
+
+.bottom-panel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-panel);
+  overflow: hidden;
+}
+
+/* ─── Tab Switcher ──────────────────────────────────────── */
+.bottom-panel-tabs {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid var(--border-default);
+  background: var(--bg-sidebar);
+  flex-shrink: 0;
+  height: 28px;
+}
+
+.bottom-panel-tab {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 12px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast);
+  outline: none;
+  white-space: nowrap;
+}
+
+.bottom-panel-tab:hover {
+  color: var(--text-secondary);
+  background: var(--bg-hover);
+}
+
+.bottom-panel-tab.active {
+  color: var(--text-primary);
+  border-bottom-color: var(--accent-blue);
+}
+
+.bottom-panel-tab:focus-visible {
+  outline: 1px solid var(--accent-blue);
+  outline-offset: -1px;
+}
+
+/* ─── Tab Content ──────────────────────────────────────── */
+.bottom-panel-content {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ============================================================
+   Live Preview Panel
+   TASK-17: Live preview (iframe + srcdoc)
+   ============================================================ */
+
+.preview-frame {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+/* ─── Preview Toolbar ──────────────────────────────────── */
+.preview-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 8px;
+  background: var(--bg-sidebar);
+  border-bottom: 1px solid var(--border-default);
+  flex-shrink: 0;
+  min-height: 28px;
+}
+
+.preview-toolbar-left,
+.preview-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.preview-toolbar-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.preview-refresh-indicator {
+  font-size: 10px;
+  color: var(--accent-blue);
+  font-style: italic;
+}
+
+.preview-toolbar-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.preview-toolbar-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+/* ─── Preview Iframe ───────────────────────────────────── */
+.preview-iframe {
+  flex: 1;
+  width: 100%;
+  border: none;
+  background: #ffffff;
+}
+
+.preview-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-panel);
+  color: var(--text-muted);
+  font-size: 13px;
+  text-align: center;
+  padding: 24px;
+  gap: 8px;
+}
+
+.preview-empty-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+/* ============================================================
+   Skeleton Loading States
+   TASK-18: Skeleton loading states
+   ============================================================ */
+
+/* Shimmer animation */
+@keyframes skeleton-shimmer {
+  0% { background-position: -200px 0; }
+  100% { background-position: calc(200px + 100%) 0; }
+}
+
+.skeleton-root {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-editor);
+}
+
+/* Generic shimmer block */
+.skeleton-block {
+  background: linear-gradient(90deg, var(--border-default) 25%, rgba(49, 50, 68, 0.6) 50%, var(--border-default) 75%);
+  background-size: 200px 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  border-radius: var(--radius-sm);
+  height: 14px;
+}
+
+.skeleton-block-sm { width: 60px; }
+.skeleton-block-btn { width: 70px; height: 24px; }
+.skeleton-block-file { width: 100%; height: 20px; margin-bottom: 8px; }
+.skeleton-block-console { height: 16px; margin-bottom: 4px; }
+.skeleton-block-status { width: 50px; height: 12px; }
+
+/* Titlebar skeleton */
+.skeleton-titlebar {
+  height: var(--titlebar-height);
+  background: var(--bg-titlebar);
+  border-bottom: 1px solid var(--border-default);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+}
+
+.skeleton-titlebar-brand {
+  width: 100px;
+  height: 16px;
+  background: linear-gradient(90deg, var(--border-default) 25%, rgba(49, 50, 68, 0.6) 50%, var(--border-default) 75%);
+  background-size: 200px 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  border-radius: var(--radius-sm);
+}
+
+.skeleton-titlebar-actions {
+  display: flex;
+  gap: 6px;
+}
+
+/* Workspace skeleton */
+.skeleton-workspace {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+/* Sidebar skeleton */
+.skeleton-sidebar {
+  width: 220px;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border-default);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.skeleton-sidebar-header {
+  padding: 10px 12px;
+}
+
+.skeleton-sidebar-list {
+  padding: 8px 12px;
+}
+
+/* Resize handle skeleton */
+.skeleton-resize-handle {
+  width: var(--resize-handle-size);
+  background: var(--border-default);
+  flex-shrink: 0;
+}
+
+.skeleton-resize-handle-h {
+  height: var(--resize-handle-size);
+  background: var(--border-default);
+  flex-shrink: 0;
+}
+
+/* Editor area skeleton */
+.skeleton-editor-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* Tab bar skeleton */
+.skeleton-tab-bar {
+  height: var(--tab-height);
+  background: var(--bg-tab-inactive);
+  border-bottom: 1px solid var(--border-default);
+  display: flex;
+  align-items: stretch;
+  flex-shrink: 0;
+}
+
+.skeleton-tab {
+  width: 120px;
+  height: 100%;
+  border-right: 1px solid var(--border-default);
+  background: var(--bg-tab-inactive);
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+}
+
+.skeleton-tab::after {
+  content: '';
+  width: 70%;
+  height: 12px;
+  background: linear-gradient(90deg, var(--border-default) 25%, rgba(49, 50, 68, 0.6) 50%, var(--border-default) 75%);
+  background-size: 200px 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  border-radius: var(--radius-sm);
+}
+
+.skeleton-tab-active {
+  background: var(--bg-tab-active);
+  border-bottom: 2px solid var(--accent-blue);
+}
+
+/* Editor content skeleton */
+.skeleton-editor-content {
+  flex: 1;
+  padding: 16px;
+  background: var(--bg-editor);
+  overflow: hidden;
+}
+
+.skeleton-line {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+
+.skeleton-line-number {
+  width: 24px;
+  height: 12px;
+  background: var(--border-default);
+  border-radius: var(--radius-sm);
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+.skeleton-line-code {
+  height: 12px;
+  background: linear-gradient(90deg, var(--border-default) 25%, rgba(49, 50, 68, 0.6) 50%, var(--border-default) 75%);
+  background-size: 200px 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  border-radius: var(--radius-sm);
+}
+
+/* Bottom panel skeleton */
+.skeleton-bottom-panel {
+  height: 120px;
+  background: var(--bg-panel);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.skeleton-bottom-header {
+  padding: 6px 8px;
+}
+
+.skeleton-bottom-content {
+  padding: 8px 12px;
+}
+
+/* Statusbar skeleton */
+.skeleton-statusbar {
+  height: var(--statusbar-height);
+  background: var(--bg-statusbar);
+  border-top: 1px solid var(--border-default);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+}
+
+.skeleton-statusbar-left,
+.skeleton-statusbar-right {
+  display: flex;
+  gap: 8px;
+}

@@ -155,3 +155,82 @@ Stage Summary:
 - No new dependencies added — uses existing Web Worker API, Zustand stores, Lucide icons
 - Bundle size: ~166KB gzipped (within 170KB target)
 - All console method types from the type system are supported (log, warn, error, info, debug, table, dir, clear, result)
+
+---
+Task ID: TASK-14 + TASK-15
+Agent: Main
+Task: Status bar component (TASK-14) + Keyboard shortcuts (TASK-15)
+
+Work Log:
+- Created src/components/StatusBar/StatusBar.tsx — dynamic status bar with:
+  - Save status indicator (Saved green / Modified yellow) with total dirty file count
+  - Cursor position (Ln/Col) from editorStore.cursorPositions
+  - Language display from file metadata (IndexedDB with module-level cache)
+  - Encoding (UTF-8), tab size (Spaces: 2) clickable items
+  - Execution status indicator (Ready/Running/Error/Timeout) matching console panel colors
+  - All items are accessible <button> elements for Phase 1 interactivity
+  - File metadata caching to avoid IndexedDB reads on every cursor update
+- Created src/components/StatusBar/index.ts — barrel export with clearFileMetaCache
+- Created src/hooks/useKeyboardShortcuts.ts — global IDE shortcut handler:
+  - Ctrl+S / Cmd+S → saveAllDirtyFiles()
+  - Ctrl+B / Cmd+B → toggleSidebar()
+  - Ctrl+J / Cmd+J → toggleBottomPanel()
+  - Ctrl+W / Cmd+W → closeFile(activeFileId)
+  - Ctrl+Enter / Cmd+Enter → run active JS file
+  - Capture phase registration to preempt CodeMirror key handlers
+  - Cross-platform support (Ctrl for Win/Linux, Cmd for macOS)
+  - Input field awareness (Ctrl+S works everywhere, others skip in input fields)
+  - Store reads via getState() for stable handler references
+- Updated src/App.tsx — replaced hardcoded <footer> with <StatusBar />, added useKeyboardShortcuts() in IDEWorkspace
+- Updated src/styles/globals.css — added .statusbar-clickable and .statusbar-separator styles
+- Created Project-Informations/development/TASK-14/TASK-14-FIN.md
+- Created Project-Informations/development/TASK-15/TASK-15-FIN.md
+- Created Project-Informations/worklogs/TASK-14-15-Worklog-Statusbar-Shortcuts-2026-05-28.md
+- Updated Project-Structure.md and Structure.md
+- Verified build: tsc --noEmit passes, vite build succeeds, ~167.81 KB gzipped
+
+Stage Summary:
+- M6 (Polish + PWA) partially complete — TASK-14 + TASK-15 done; TASK-16, TASK-17, TASK-18 remain
+- Dynamic status bar replaces static hardcoded footer with real-time cursor, language, save status, and execution indicator
+- Keyboard shortcuts provide VS Code-like IDE interaction (Ctrl+S/B/J/W/Enter)
+- No new dependencies added
+- Bundle size: ~167.81 KB gzipped (within 200KB target)
+
+---
+Task ID: TASK-16 + TASK-17 + TASK-18 + Fixes
+Agent: Main
+Task: PWA setup (TASK-16) + Live preview (TASK-17) + Skeleton loading (TASK-18) + Fix known issues
+
+Work Log:
+- Fixed stale Project-Structure.md: added TASK-11/12 to development folder tree, added runner/ directory to source tree
+- Created missing development reports: TASK-09-FIN.md, TASK-10-FIN.md, TASK-11-FIN.md, TASK-12-FIN.md
+- Created missing worklog: TASK-11-12-Worklog-CodeRunner-Console-2026-05-28.md
+- Created public/icons/icon-192.svg and icon-512.svg — SVG PWA icons (CC logo on dark background)
+- Updated vite.config.ts — Changed icon references from .png to .svg, added icons/*.svg to includeAssets
+- Updated src/main.tsx — Added service worker registration via virtual:pwa-register with autoUpdate, hourly background checks, offline-ready/refresh callbacks
+- Created src/components/Preview/PreviewFrame.tsx — Live preview component with:
+  - Sandboxed iframe (sandbox="allow-scripts", NEVER allow-same-origin)
+  - HTML builder: HTML → index.html → CSS wrap → JS wrap → default message
+  - 300ms debounce for preview refresh
+  - Manual refresh + open in new tab buttons
+- Created src/components/Preview/index.ts — Barrel export
+- Created src/components/Skeleton/IDESkeleton.tsx — Skeleton loading component with:
+  - Full IDE layout structure (titlebar, sidebar, tabs, editor, bottom panel, status bar)
+  - CSS shimmer animation (1.5s ease-in-out infinite)
+  - 600ms display time on first mount
+- Created src/components/Skeleton/index.ts — Barrel export
+- Updated src/App.tsx — Added BottomPanelTabs (Console/Preview), integrated PreviewFrame, added showSkeleton state with 600ms timer
+- Updated src/styles/globals.css — Added ~360 lines of bottom panel tabs, preview, and skeleton CSS
+- Created TASK-16-FIN.md, TASK-17-FIN.md, TASK-18-FIN.md
+- Created TASK-16-17-18-Worklog-PWA-Preview-Skeleton-2026-05-28.md
+- Updated Project-Structure.md and Structure.md
+- Verified build: tsc --noEmit passes, vite build succeeds, ~170.59 KB gzipped
+
+Stage Summary:
+- All known issues fixed (stale structure, missing reports, missing worklog)
+- TASK-16 ✅ PWA setup — installable, offline-capable, service worker with Workbox
+- TASK-17 ✅ Live preview — sandboxed iframe with Console/Preview tab switching
+- TASK-18 ✅ Skeleton loading — shimmer animation on first mount
+- M6 (Polish + PWA) milestone complete — all 6 tasks done (TASK-13 through TASK-18)
+- Only TASK-19 (Deploy + testing) and TASK-20 (Sample project) remain in Phase 0
+- Bundle size: ~170.59 KB gzipped (within 200KB target)

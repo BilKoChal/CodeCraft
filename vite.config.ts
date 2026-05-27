@@ -13,7 +13,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'robots.txt'],
+      includeAssets: ['favicon.svg', 'robots.txt', 'icons/*.svg'],
 
       manifest: {
         name: 'CodeCraft — Browser Code Editor',
@@ -27,19 +27,19 @@ export default defineConfig({
         start_url: '/CodeCraft/',
         icons: [
           {
-            src: '/CodeCraft/icons/icon-192.png',
+            src: '/CodeCraft/icons/icon-192.svg',
             sizes: '192x192',
-            type: 'image/png',
+            type: 'image/svg+xml',
           },
           {
-            src: '/CodeCraft/icons/icon-512.png',
+            src: '/CodeCraft/icons/icon-512.svg',
             sizes: '512x512',
-            type: 'image/png',
+            type: 'image/svg+xml',
           },
           {
-            src: '/CodeCraft/icons/icon-512.png',
+            src: '/CodeCraft/icons/icon-512.svg',
             sizes: '512x512',
-            type: 'image/png',
+            type: 'image/svg+xml',
             purpose: 'maskable',
           },
         ],

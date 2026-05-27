@@ -1,6 +1,6 @@
 # CodeCraft — Project Structure (Root)
 
-**Last Updated:** 2026-05-28 (after TASK-14 + TASK-15)
+**Last Updated:** 2026-05-28 (after TASK-16 + TASK-17 + TASK-18)
 
 ---
 
@@ -25,9 +25,14 @@ codecraft/                                   # Project root
 │   │   ├── TASK-08/                         # ✅ File CRUD operations (useFileTree hook)
 │   │   ├── TASK-09/                         # ✅ Project list page + CRUD
 │   │   ├── TASK-10/                         # ✅ ZIP import/export (fflate)
+│   │   ├── TASK-11/                         # ✅ JS code runner (Web Worker)
+│   │   ├── TASK-12/                         # ✅ Console output panel
 │   │   ├── TASK-13/                         # ✅ Dark theme + CSS
 │   │   ├── TASK-14/                         # ✅ Status bar component
-│   │   └── TASK-15/                         # ✅ Keyboard shortcuts
+│   │   ├── TASK-15/                         # ✅ Keyboard shortcuts
+│   │   ├── TASK-16/                         # ✅ PWA setup
+│   │   ├── TASK-17/                         # ✅ Live preview (iframe + srcdoc)
+│   │   └── TASK-18/                         # ✅ Skeleton loading
 │   └── Structure.md
 ├── src/                                     # Application source code
 │   ├── components/                          # ✅ React components
@@ -52,11 +57,19 @@ codecraft/                                   # Project root
 │   │   ├── StatusBar/                       # ✅ Status bar (TASK-14)
 │   │   │   ├── StatusBar.tsx               # Dynamic status bar (cursor, language, save status, exec indicator)
 │   │   │   └── index.ts                     # Barrel exports
-│   │   └── Console/                         # ✅ Console output (TASK-12)
+│   │   ├── Console/                         # ✅ Console output (TASK-12)
+│   │   ├── Preview/                         # ✅ Live preview (TASK-17)
+│   │   │   ├── PreviewFrame.tsx             # Sandboxed iframe preview with tab switching
+│   │   │   └── index.ts                     # Barrel exports
+│   │   └── Skeleton/                        # ✅ Skeleton loading (TASK-18)
+│   │       ├── IDESkeleton.tsx              # Shimmer skeleton mimicking IDE layout
+│   │       └── index.ts                     # Barrel exports
 │   ├── hooks/                               # ✅ Custom React hooks
 │   │   ├── useAutoSave.ts                   # Auto-save with 1s debounce → IndexedDB
 │   │   ├── useKeyboardShortcuts.ts          # Global IDE shortcuts (Ctrl+S/B/J/W/Enter, TASK-15)
 │   │   └── useProjects.ts                   # Reactive project list + CRUD + project switching
+│   ├── runner/                              # ✅ Code execution engine
+│   │   └── jsRunner.ts                      # Web Worker sandbox for JS execution (TASK-11)
 │   ├── stores/                              # ✅ Zustand state stores
 │   │   ├── index.ts, projectStore.ts, editorStore.ts, uiStore.ts, consoleStore.ts
 │   ├── db/                                  # ✅ Dexie.js database
@@ -82,7 +95,7 @@ codecraft/                                   # Project root
 
 | Phase | Status | Key Deliverables |
 |-------|--------|-----------------|
-| **Phase 0** | 🟡 In Progress (M5+M6 mostly complete) | TASK-01 ✅, TASK-02 ✅, TASK-03 ✅, TASK-04 ✅, TASK-05 ✅, TASK-06 ✅, TASK-07 ✅, TASK-08 ✅, TASK-09 ✅, TASK-10 ✅, TASK-11 ✅, TASK-12 ✅, TASK-13 ✅, TASK-14 ✅, TASK-15 ✅ |
+| **Phase 0** | 🟡 In Progress (M6 complete, M7 pending) | TASK-01 ✅ through TASK-18 ✅ |
 | **Phase 1** | ⚪ Not Started | Multi-language, nested folders, theme switcher |
 | **Phase 2** | ⚪ Not Started | Terminal, drag-and-drop, C/Lua/Ruby support |
 | **Phase 3** | ⚪ Not Started | C++/Java/PHP, HMR, collaboration |
@@ -106,9 +119,9 @@ codecraft/                                   # Project root
 | TASK-13 | ✅ Done | Dark theme + CSS variables |
 | TASK-14 | ✅ Done | Status bar component |
 | TASK-15 | ✅ Done | Keyboard shortcuts |
-| TASK-16 | ⚪ Pending | PWA setup |
-| TASK-17 | ⚪ Pending | Live preview |
-| TASK-18 | ⚪ Pending | Skeleton loading |
+| TASK-16 | ✅ Done | PWA setup |
+| TASK-17 | ✅ Done | Live preview |
+| TASK-18 | ✅ Done | Skeleton loading |
 | TASK-19 | ⚪ Pending | Deploy + testing |
 | TASK-20 | ⚪ Pending | Sample project template |
 

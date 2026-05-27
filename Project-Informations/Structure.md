@@ -1,6 +1,6 @@
 # CodeCraft — Project Structure
 
-**Last Updated:** 2026-05-28 (after TASK-14 + TASK-15)
+**Last Updated:** 2026-05-28 (after TASK-16 + TASK-17 + TASK-18)
 
 ---
 
@@ -25,6 +25,8 @@ Project-Informations/
 │   ├── TASK-04-05-13-Worklog-Editor-Tabs-Theme-2026-05-28.md
 │   ├── TASK-07-08-Worklog-FileTree-CRUD-2026-05-28.md
 │   └── TASK-14-15-Worklog-Statusbar-Shortcuts-2026-05-28.md
+│   ├── TASK-11-12-Worklog-CodeRunner-Console-2026-05-28.md
+│   └── TASK-16-17-18-Worklog-PWA-Preview-Skeleton-2026-05-28.md
 ├── analyses/
 │   └── Placeholder.md
 ├── development/
@@ -38,9 +40,14 @@ Project-Informations/
 │   ├── TASK-08/ (OGF + FIN)
 │   ├── TASK-09/ (FIN)
 │   ├── TASK-10/ (FIN)
+│   ├── TASK-11/ (FIN)
+│   ├── TASK-12/ (FIN)
 │   ├── TASK-13/ (OGF + FIN)
 │   ├── TASK-14/ (FIN)
-│   └── TASK-15/ (FIN)
+│   ├── TASK-15/ (FIN)
+│   ├── TASK-16/ (FIN)
+│   ├── TASK-17/ (FIN)
+│   └── TASK-18/ (FIN)
 └── Structure.md                             # This file
 ```
 
