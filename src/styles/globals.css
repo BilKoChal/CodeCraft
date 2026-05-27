@@ -4,6 +4,9 @@
    Catppuccin Mocha-inspired dark theme with CSS Custom Properties
    for zero-runtime theming. Light theme variables will be added
    in Phase 1.
+   
+   TASK-13: Enhanced with additional variables for tab bar,
+   resize handles, shadows, and professional polish.
    ============================================================ */
 
 /* --- Theme Variables (Dark — Default) --- */
@@ -16,6 +19,7 @@
   --bg-statusbar: #181825;
   --bg-tab-active: #1e1e2e;
   --bg-tab-inactive: #11111b;
+  --bg-tab-hover: rgba(49, 50, 68, 0.5);
   --bg-titlebar: #11111b;
   --bg-hover: rgba(137, 180, 250, 0.08);
   --bg-selection: rgba(137, 180, 250, 0.15);
@@ -47,6 +51,14 @@
   --panel-min-height: 100px;
   --resize-handle-size: 4px;
 
+  /* Tab-specific */
+  --tab-min-width: 100px;
+  --tab-max-width: 200px;
+  --tab-icon-size: 14px;
+  --tab-close-size: 20px;
+  --tab-modified-dot-size: 8px;
+  --tab-top-border-height: 2px;
+
   /* Typography */
   --font-mono: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
   --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -61,6 +73,19 @@
   /* Radius */
   --radius-sm: 3px;
   --radius-md: 6px;
+
+  /* Shadows (for popups, tooltips, dropdowns) */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+
+  /* Focus ring */
+  --focus-ring: 0 0 0 1px var(--accent-blue);
+  --focus-ring-offset: 0 0 0 2px var(--bg-editor);
+
+  /* Status bar */
+  --statusbar-item-padding: 0 8px;
+  --statusbar-item-hover: rgba(137, 180, 250, 0.12);
 }
 
 /* --- Global Reset --- */
@@ -139,4 +164,331 @@ body {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+/* ============================================================
+   Tab Bar Styles
+   ============================================================ */
+
+/* ─── Tab Bar Container ─────────────────────────────────── */
+.tab-bar {
+  display: flex;
+  align-items: stretch;
+  height: var(--tab-height);
+  background: var(--bg-tab-inactive);
+  border-bottom: 1px solid var(--border-default);
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none; /* Firefox */
+  flex-shrink: 0;
+  scroll-behavior: smooth;
+  -webkit-app-region: no-drag;
+}
+
+.tab-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.tab-bar-empty {
+  justify-content: center;
+  align-items: center;
+}
+
+.tab-bar-placeholder {
+  color: var(--text-muted);
+  font-size: 12px;
+  user-select: none;
+}
+
+/* ─── Individual Tab ────────────────────────────────────── */
+.tab-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  height: 100%;
+  min-width: var(--tab-min-width);
+  max-width: var(--tab-max-width);
+  flex-shrink: 0;
+  border: none;
+  border-right: 1px solid var(--border-default);
+  background: var(--bg-tab-inactive);
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  cursor: pointer;
+  position: relative;
+  transition: background var(--transition-fast), color var(--transition-fast);
+  outline: none;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.tab-item:hover {
+  background: var(--bg-tab-hover);
+  color: var(--text-secondary);
+}
+
+.tab-item.active {
+  background: var(--bg-tab-active);
+  color: var(--text-primary);
+}
+
+/* Active tab top border accent */
+.tab-item.active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--tab-top-border-height);
+  background: var(--accent-blue);
+}
+
+/* Focus ring for keyboard navigation */
+.tab-item:focus-visible {
+  outline: 1px solid var(--accent-blue);
+  outline-offset: -1px;
+  z-index: 1;
+}
+
+/* ─── Tab Icon ──────────────────────────────────────────── */
+.tab-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* ─── Tab Label ─────────────────────────────────────────── */
+.tab-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+/* ─── Tab Close Button / Modified Dot ───────────────────── */
+.tab-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--tab-close-size);
+  height: var(--tab-close-size);
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+  position: relative;
+  transition: background var(--transition-fast);
+}
+
+.tab-close:hover {
+  background: var(--bg-hover);
+}
+
+/* X icon: hidden by default, shown on tab hover/active */
+.tab-close-x {
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.tab-item:hover .tab-close-x,
+.tab-item.active .tab-close-x {
+  opacity: 1;
+}
+
+/* Dirty tab: X hidden, dot shown instead */
+.tab-item.dirty .tab-close-x {
+  opacity: 0 !important;
+}
+
+/* On dirty tab hover: show X, hide dot */
+.tab-item.dirty:hover .tab-close-x {
+  opacity: 1 !important;
+}
+
+/* Modified dot */
+.tab-modified-dot {
+  width: var(--tab-modified-dot-size);
+  height: var(--tab-modified-dot-size);
+  border-radius: 50%;
+  background: var(--text-muted);
+  position: absolute;
+  transition: background var(--transition-fast);
+}
+
+.tab-item.active .tab-modified-dot {
+  background: var(--accent-blue);
+}
+
+.tab-item.dirty:hover .tab-modified-dot {
+  opacity: 0;
+}
+
+/* Last tab: no right border */
+.tab-item:last-child {
+  border-right: none;
+}
+
+/* Tab appear animation */
+@keyframes tab-appear {
+  from {
+    opacity: 0;
+    transform: scaleX(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+.tab-item {
+  animation: tab-appear 100ms ease-out;
+}
+
+/* ============================================================
+   Editor Empty State
+   ============================================================ */
+
+.editor-empty-state {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-editor);
+}
+
+.editor-empty-text {
+  color: var(--text-muted);
+  font-size: 14px;
+  user-select: none;
+}
+
+/* ============================================================
+   Panel Resize Handles
+   ============================================================ */
+
+/* Horizontal resize handle */
+[data-panel-group-direction="horizontal"] > [data-resize-handle] {
+  width: var(--resize-handle-size);
+  background: transparent;
+  transition: background var(--transition-fast);
+  position: relative;
+  border: none !important;
+}
+
+[data-panel-group-direction="horizontal"] > [data-resize-handle]::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -2px;
+  right: -2px;
+  z-index: 10;
+}
+
+[data-panel-group-direction="horizontal"] > [data-resize-handle]:hover {
+  background: var(--border-default);
+}
+
+[data-panel-group-direction="horizontal"] > [data-resize-handle][data-resize-handle-active] {
+  background: var(--accent-blue);
+  box-shadow: 0 0 4px rgba(137, 180, 250, 0.3);
+}
+
+/* Vertical resize handle */
+[data-panel-group-direction="vertical"] > [data-resize-handle] {
+  height: var(--resize-handle-size);
+  background: transparent;
+  transition: background var(--transition-fast);
+  position: relative;
+  border: none !important;
+}
+
+[data-panel-group-direction="vertical"] > [data-resize-handle]::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -2px;
+  bottom: -2px;
+  z-index: 10;
+}
+
+[data-panel-group-direction="vertical"] > [data-resize-handle]:hover {
+  background: var(--border-default);
+}
+
+[data-panel-group-direction="vertical"] > [data-resize-handle][data-resize-handle-active] {
+  background: var(--accent-blue);
+  box-shadow: 0 0 4px rgba(137, 180, 250, 0.3);
+}
+
+/* Cursor styles for resize handles */
+[data-panel-group-direction="horizontal"] > [data-resize-handle] {
+  cursor: col-resize;
+}
+
+[data-panel-group-direction="vertical"] > [data-resize-handle] {
+  cursor: row-resize;
+}
+
+/* Focus state for keyboard-accessible resize */
+[data-resize-handle]:focus-visible {
+  outline: 1px solid var(--accent-blue);
+  outline-offset: -1px;
+}
+
+/* ============================================================
+   react-resizable-panels Overrides
+   ============================================================ */
+
+[data-panel] {
+  overflow: hidden;
+  min-width: 0;
+  min-height: 0;
+}
+
+[data-panel-group] {
+  height: 100%;
+  width: 100%;
+}
+
+/* ============================================================
+   Status Bar Styles
+   ============================================================ */
+
+.statusbar {
+  height: var(--statusbar-height);
+  background: var(--bg-statusbar);
+  border-top: 1px solid var(--border-default);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--statusbar-item-padding);
+  color: var(--text-muted);
+  font-size: 11px;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.statusbar-left,
+.statusbar-right {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.statusbar-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 8px;
+  height: 100%;
+  cursor: default;
+  transition: background var(--transition-fast);
+  white-space: nowrap;
+}
+
+.statusbar-item:hover {
+  background: var(--statusbar-item-hover);
+  color: var(--text-secondary);
 }

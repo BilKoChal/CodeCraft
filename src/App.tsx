@@ -1,14 +1,16 @@
 /**
  * CodeCraft — App Root Component
  *
- * This is the top-level component that renders the IDE workspace.
- * Phase 0 renders a minimal layout with placeholder sections
- * that will be filled in by subsequent tasks.
+ * The top-level component that renders the IDE workspace.
+ * Now includes real components for the editor, tab bar, and
+ * polished dark theme (TASK-04, TASK-05, TASK-13).
  */
 
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import { useUIStore } from './stores/uiStore';
 import { useAutoSave } from './hooks/useAutoSave';
+import { CodeEditor } from './components/Editor';
+import { TabBar } from './components/Tabs';
 
 function App() {
   // Activate auto-save for all open files (1s debounce → IndexedDB)
@@ -20,20 +22,7 @@ function App() {
   return (
     <div className="app-root" style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
       {/* Title Bar */}
-      <header
-        className="titlebar"
-        style={{
-          height: 'var(--titlebar-height)',
-          background: 'var(--bg-titlebar)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '0 12px',
-          borderBottom: '1px solid var(--border-default)',
-          flexShrink: 0,
-          userSelect: 'none',
-        }}
-      >
+      <header className="titlebar">
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ color: 'var(--accent-blue)', fontWeight: 700, fontSize: 14 }}>
             ⌘ CodeCraft
@@ -42,7 +31,7 @@ function App() {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <span style={{ color: 'var(--text-muted)', fontSize: 11 }}>
-            Phase 0 Scaffold
+            Browser Code Editor
           </span>
         </div>
       </header>
@@ -77,13 +66,7 @@ function App() {
                 </div>
               </div>
             </Panel>
-            <PanelResizeHandle
-              style={{
-                width: 'var(--resize-handle-size)',
-                background: 'var(--border-default)',
-                transition: 'background var(--transition-fast)',
-              }}
-            />
+            <PanelResizeHandle />
           </>
         )}
 
@@ -100,34 +83,11 @@ function App() {
                   background: 'var(--bg-editor)',
                 }}
               >
-                {/* Tab Bar Placeholder */}
-                <div
-                  style={{
-                    height: 'var(--tab-height)',
-                    background: 'var(--bg-tab-inactive)',
-                    borderBottom: '1px solid var(--border-default)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    padding: '0 8px',
-                    color: 'var(--text-muted)',
-                    fontSize: 12,
-                    flexShrink: 0,
-                  }}
-                >
-                  Tab bar will appear here (TASK-05)
-                </div>
-                {/* Editor Placeholder */}
-                <div
-                  style={{
-                    flex: 1,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: 'var(--text-muted)',
-                    fontSize: 14,
-                  }}
-                >
-                  CodeMirror 6 editor will appear here (TASK-04)
+                {/* Tab Bar — TASK-05 */}
+                <TabBar />
+                {/* Code Editor — TASK-04 */}
+                <div style={{ flex: 1, overflow: 'hidden' }}>
+                  <CodeEditor />
                 </div>
               </div>
             </Panel>
@@ -135,13 +95,7 @@ function App() {
             {/* Bottom Panel (Console / Preview) */}
             {bottomPanelOpen && (
               <>
-                <PanelResizeHandle
-                  style={{
-                    height: 'var(--resize-handle-size)',
-                    background: 'var(--border-default)',
-                    transition: 'background var(--transition-fast)',
-                  }}
-                />
+                <PanelResizeHandle />
                 <Panel
                   defaultSize={30}
                   minSize={15}
@@ -174,23 +128,15 @@ function App() {
       </PanelGroup>
 
       {/* Status Bar */}
-      <footer
-        style={{
-          height: 'var(--statusbar-height)',
-          background: 'var(--bg-statusbar)',
-          borderTop: '1px solid var(--border-default)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '0 12px',
-          color: 'var(--text-muted)',
-          fontSize: 11,
-          flexShrink: 0,
-          userSelect: 'none',
-        }}
-      >
-        <span>Ln 1, Col 1</span>
-        <span>JavaScript</span>
+      <footer className="statusbar">
+        <div className="statusbar-left">
+          <span className="statusbar-item">Ln 1, Col 1</span>
+        </div>
+        <div className="statusbar-right">
+          <span className="statusbar-item">JavaScript</span>
+          <span className="statusbar-item">UTF-8</span>
+          <span className="statusbar-item">Spaces: 2</span>
+        </div>
       </footer>
     </div>
   );

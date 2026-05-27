@@ -1,6 +1,6 @@
 # CodeCraft — Project Structure (Root)
 
-**Last Updated:** 2026-05-28 (after TASK-03 + TASK-06)
+**Last Updated:** 2026-05-28 (after TASK-04 + TASK-05 + TASK-13)
 
 ---
 
@@ -18,65 +18,56 @@ codecraft/                                   # Project root
 │   │   ├── TASK-01/                         # ✅ Project scaffold
 │   │   ├── TASK-02/                         # ✅ Zustand stores
 │   │   ├── TASK-03/                         # ✅ Dexie database
-│   │   └── TASK-06/                         # ✅ Auto-save hook
+│   │   ├── TASK-04/                         # ✅ CM6 editor component
+│   │   ├── TASK-05/                         # ✅ Tab bar component
+│   │   ├── TASK-06/                         # ✅ Auto-save hook
+│   │   └── TASK-13/                         # ✅ Dark theme + CSS
 │   └── Structure.md
 ├── src/                                     # Application source code
-│   ├── components/                          # React components (placeholder dirs)
-│   │   ├── Editor/
-│   │   ├── Sidebar/
-│   │   ├── Tabs/
-│   │   ├── Layout/
-│   │   ├── Modals/
-│   │   ├── StatusBar/
-│   │   └── Console/
+│   ├── components/                          # ✅ React components
+│   │   ├── Editor/                          # ✅ CodeMirror 6 editor
+│   │   │   ├── CodeEditor.tsx               # Main editor (uncontrolled mode)
+│   │   │   ├── catppuccinMocha.ts           # CM6 theme (EditorView.theme + HighlightStyle)
+│   │   │   ├── extensions.ts               # Extension composition (basicSetup replacement)
+│   │   │   └── index.ts                     # Barrel exports
+│   │   ├── Tabs/                            # ✅ Tab bar
+│   │   │   ├── TabBar.tsx                   # Tab bar with scroll, keyboard nav, file meta cache
+│   │   │   ├── FileIcon.tsx                 # File type icon mapping (Lucide + Catppuccin colors)
+│   │   │   └── index.ts                     # Barrel exports
+│   │   ├── Sidebar/                         # (placeholder)
+│   │   ├── Layout/                          # (placeholder)
+│   │   ├── Modals/                          # (placeholder)
+│   │   ├── StatusBar/                       # (placeholder)
+│   │   └── Console/                         # (placeholder)
 │   ├── hooks/                               # ✅ Custom React hooks
 │   │   └── useAutoSave.ts                   # Auto-save with 1s debounce → IndexedDB
 │   ├── stores/                              # ✅ Zustand state stores
-│   │   ├── index.ts                         # Barrel exports
-│   │   ├── projectStore.ts                  # Project navigation state
-│   │   ├── editorStore.ts                   # Editor content + dirty tracking
-│   │   ├── uiStore.ts                       # UI layout state
-│   │   └── consoleStore.ts                  # Console output state
+│   │   ├── index.ts, projectStore.ts, editorStore.ts, uiStore.ts, consoleStore.ts
 │   ├── db/                                  # ✅ Dexie.js database
-│   │   ├── index.ts                         # Barrel exports
-│   │   ├── database.ts                      # DB class, schema V1, singleton instance
-│   │   └── queries/
-│   │       ├── projects.ts                  # Project CRUD (7 functions)
-│   │       ├── files.ts                     # File CRUD (14 functions)
-│   │       └── settings.ts                  # AppSettings CRUD (5 functions)
+│   │   ├── index.ts, database.ts
+│   │   └── queries/ (projects.ts, files.ts, settings.ts)
 │   ├── utils/                               # ✅ Utility functions
-│   │   ├── id.ts                            # UUID generation
-│   │   ├── languageDetection.ts             # Language detection
-│   │   └── storage.ts                       # localStorage helper
-│   ├── pages/                               # Page components
+│   │   ├── id.ts, languageDetection.ts, storage.ts
+│   ├── pages/                               # (placeholder)
 │   ├── types/                               # ✅ Shared TypeScript types
 │   │   └── index.ts
-│   ├── styles/                              # ✅ CSS styles
-│   │   ├── globals.css                      # Theme variables + global reset
+│   ├── styles/                              # ✅ CSS styles (enhanced)
+│   │   ├── globals.css                      # Theme variables + global reset + tab bar + resize + status bar
 │   │   └── editor.css                       # CodeMirror 6 overrides
-│   ├── App.tsx                              # ✅ Root component with panel layout + auto-save
+│   ├── App.tsx                              # ✅ Root component with TabBar + CodeEditor
 │   ├── main.tsx                             # ✅ React entry point
 │   └── vite-env.d.ts                        # ✅ Vite type declarations
 ├── public/                                  # ✅ Static assets
-│   ├── favicon.svg
-│   ├── robots.txt
-│   └── icons/                               # PWA icons (to be created)
 ├── .github/workflows/deploy.yml             # ✅ GitHub Pages auto-deploy
-├── package.json                             # ✅ Dependencies and scripts
-├── vite.config.ts                           # ✅ Vite configuration
-├── tsconfig.json                            # ✅ TypeScript project references
-├── tsconfig.app.json                        # ✅ App TS config
-├── tsconfig.node.json                       # ✅ Node/Vite TS config
-├── index.html                               # ✅ SPA entry point
-├── .gitignore                               # ✅ Ignore patterns
-└── node_modules/                            # Installed dependencies
+├── package.json, vite.config.ts, tsconfig*.json, index.html, .gitignore
+└── node_modules/
 ```
 
 ## Phase Status
 
 | Phase | Status | Key Deliverables |
 |-------|--------|-----------------|
-| **Phase 0** | 🟡 In Progress (M1 complete) | TASK-01 ✅, TASK-02 ✅, TASK-03 ✅, TASK-06 ✅, 16 tasks remaining |
+| **Phase 0** | 🟡 In Progress (M2 partially done) | TASK-01 ✅, TASK-02 ✅, TASK-03 ✅, TASK-04 ✅, TASK-05 ✅, TASK-06 ✅, TASK-13 ✅ |
 | **Phase 1** | ⚪ Not Started | Multi-language, nested folders, theme switcher |
 | **Phase 2** | ⚪ Not Started | Terminal, drag-and-drop, C/Lua/Ruby support |
 | **Phase 3** | ⚪ Not Started | C++/Java/PHP, HMR, collaboration |
@@ -88,8 +79,8 @@ codecraft/                                   # Project root
 | TASK-01 | ✅ Done | Project scaffold |
 | TASK-02 | ✅ Done | Zustand stores |
 | TASK-03 | ✅ Done | Dexie database schema + queries |
-| TASK-04 | ⚪ Pending | CodeMirror 6 editor component |
-| TASK-05 | ⚪ Pending | Tab bar component |
+| TASK-04 | ✅ Done | CodeMirror 6 editor component |
+| TASK-05 | ✅ Done | Tab bar component |
 | TASK-06 | ✅ Done | Auto-save hook |
 | TASK-07 | ⚪ Pending | File tree sidebar component |
 | TASK-08 | ⚪ Pending | File CRUD operations |
@@ -97,7 +88,7 @@ codecraft/                                   # Project root
 | TASK-10 | ⚪ Pending | ZIP import/export |
 | TASK-11 | ⚪ Pending | JS code runner |
 | TASK-12 | ⚪ Pending | Console output panel |
-| TASK-13 | ⚪ Pending | Dark theme + CSS variables |
+| TASK-13 | ✅ Done | Dark theme + CSS variables |
 | TASK-14 | ⚪ Pending | Status bar component |
 | TASK-15 | ⚪ Pending | Keyboard shortcuts |
 | TASK-16 | ⚪ Pending | PWA setup |
